@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Blackbox.Server
 {
-    static class Program
+    internal static class Program
     {
         /// <summary>
         /// The main entry point for the application.
@@ -14,9 +14,9 @@ namespace Blackbox.Server
         [STAThread]
         static void Main()
         {
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Main());
+            //Application.EnableVisualStyles();
+            //Application.SetCompatibleTextRenderingDefault(false);
+            //Application.Run(new Main());
             SocketConn.AsynchronousSocketListener.StartListening();
         }
     }
