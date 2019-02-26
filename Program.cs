@@ -17,6 +17,7 @@ namespace Blackbox.Server
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Main());
+            SocketConn.AsynchronousSocketListener.StartListening();
         }
     }
 }
