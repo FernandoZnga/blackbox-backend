@@ -7,11 +7,13 @@ namespace Blackbox.Server
 	{
 		static void SerializeCcPinNumber(string ccNumber, string pinNumber)
 		{
-            CcPinNumber CardInfo = new CcPinNumber();
-            CardInfo.CcNumber = ccNumber;
-            CardInfo.PinNumber = pinNumber;
+            CcPinNumber CardInfo = new CcPinNumber
+            {
+                CcNumber = ccNumber,
+                PinNumber = pinNumber
+            };
 
-			XmlSerializer xml = new XmlSerializer(typeof(CcPinNumber));
+            XmlSerializer xml = new XmlSerializer(typeof(CcPinNumber));
 			using (StringWriter stringWriter = new StringWriter())
 			{
                 xml.Serialize(stringWriter, CardInfo);
