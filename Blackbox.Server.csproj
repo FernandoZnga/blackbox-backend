@@ -218,6 +218,8 @@
   <ItemGroup>
     <Compile Include="DataConn\DataContext.cs" />
     <Compile Include="Domain\_TextLog.cs" />
+    <Compile Include="Prop\CcPinNumber.cs" />
+    <Compile Include="src\Serialization.cs" />
     <Compile Include="src\SocketConn.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>

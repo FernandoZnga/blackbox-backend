@@ -8,32 +8,31 @@ using System.Runtime.Serialization.Formatters.Binary;
  
 // Used to serialize into XML
 using System.Xml.Serialization;
+using System.IO;
 
-namespace Blackbox.Client
+namespace Blackbox.Server
 {
 	class Serialization
 	{
 		static void SerializeCcPinNumber(string ccNumber, string pinNumber)
 		{
-			CcPinNumber ccPinNumber = new CcPinNumber
-			{
-				ccPinNumber.CcNumber = ccNumber;
-				ccPinNumber.PinNumber = pinNumber;
-			};
+            CcPinNumber CardInfo = new CcPinNumber();
+            CardInfo.CcNumber = ccNumber;
+            CardInfo.PinNumber = pinNumber;
 
-			XmlSerializer xml = new XmlSerializar(typeof(CcPinNumber));
+			XmlSerializer xml = new XmlSerializer(typeof(CcPinNumber));
 			using (StringWriter stringWriter = new StringWriter())
 			{
-				xml.Serialize(stringWriter, ccPinNumber)
-			}
+                xml.Serialize(stringWriter, CardInfo);
+			};
 		}
-		static void DeserializeCcPinNumber(string ccPinNumber)
+		static void DeserializeCcPinNumber(string CardInfo)
 		{
-			XmlSerializar xml = new XmlSerializer(typeof(CcPinNumber));
-			using (StringReader stringReader = new StringReader(ccPinNumber))
+            XmlSerializer xml = new XmlSerializer(typeof(CcPinNumber));
+			using (StringReader stringReader = new StringReader(CardInfo))
 			{
-				CcPinNumber = (CcPinNumber)(xml.Deserialize(stringReader));
-			}
+                CcPinNumber ccPinNUmber = (CcPinNumber)(xml.Deserialize(stringReader));
+            }
 		}
 	}
 }
