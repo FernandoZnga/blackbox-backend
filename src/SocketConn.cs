@@ -73,12 +73,14 @@ namespace Blackbox.Server
 		  
 		        // Get the socket that handles the client request.  
 		        Socket listener = (Socket) ar.AsyncState;  
-		        Socket handler = listener.EndAccept(ar);  
-		  
-		        // Create the state object.  
-		        StateObject state = new StateObject();  
-		        state.workSocket = handler;  
-		        handler.BeginReceive( state.buffer, 0, StateObject.BufferSize, 0,  
+		        Socket handler = listener.EndAccept(ar);
+
+                // Create the state object.  
+                StateObject state = new StateObject
+                {
+                    workSocket = handler
+                };
+                handler.BeginReceive( state.buffer, 0, StateObject.BufferSize, 0,  
 		            new AsyncCallback(ReadCallback), state);  
 		    }  
 		  

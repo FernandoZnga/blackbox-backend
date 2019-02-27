@@ -5,7 +5,7 @@ namespace Blackbox.Server
 {
     class Serialization
 	{
-		static void SerializeCcPinNumber(string ccNumber, string pinNumber)
+		public static string SerializeCcPinNumber(string ccNumber, string pinNumber)
 		{
             CcPinNumber CardInfo = new CcPinNumber
             {
@@ -17,14 +17,16 @@ namespace Blackbox.Server
 			using (StringWriter stringWriter = new StringWriter())
 			{
                 xml.Serialize(stringWriter, CardInfo);
+                return stringWriter.ToString();
 			};
 		}
-		static void DeserializeCcPinNumber(string CardInfo)
+		public static CcPinNumber DeserializeCcPinNumber(string CardInfo)
 		{
             XmlSerializer xml = new XmlSerializer(typeof(CcPinNumber));
 			using (StringReader stringReader = new StringReader(CardInfo))
 			{
-                CcPinNumber ccPinNUmber = (CcPinNumber)(xml.Deserialize(stringReader));
+                CcPinNumber ccPinNUmber = (CcPinNumber)xml.Deserialize(stringReader);
+                return ccPinNUmber;
             }
 		}
 	}
