@@ -2,9 +2,9 @@
 
 namespace Blackbox.Server.Domain
 {
-    class _TextLog
+    class __TextLog
     {
-        public _TextLog() => CreatedAt = DateTime.Now;
+        public __TextLog() => CreatedAt = DateTime.Now;
 
         public int Id { get; set; }
         public DateTime CreatedAt { get; set; }

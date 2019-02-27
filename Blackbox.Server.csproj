@@ -221,14 +221,10 @@
     <Compile Include="Domain\CcType.cs" />
     <Compile Include="Domain\CreditCard.cs" />
     <Compile Include="Domain\Customer.cs" />
-    <Compile Include="Domain\_TextLog.cs" />
-    <Compile Include="Migrations\20190227052423_init.cs" />
-    <Compile Include="Migrations\20190227052423_init.designer.cs">
-      <DependentUpon>20190227052423_init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\20190227052839_first-classes.cs" />
-    <Compile Include="Migrations\20190227052839_first-classes.designer.cs">
-      <DependentUpon>20190227052839_first-classes.cs</DependentUpon>
+    <Compile Include="Domain\__TextLog.cs" />
+    <Compile Include="Migrations\20190227060906_init.cs" />
+    <Compile Include="Migrations\20190227060906_init.designer.cs">
+      <DependentUpon>20190227060906_init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\DataContextModelSnapshot.cs" />
     <Compile Include="Prop\CcPinNumber.cs" />

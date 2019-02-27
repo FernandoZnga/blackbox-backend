@@ -4,7 +4,7 @@ namespace Blackbox.Server.DataConn
 {
     public class DataContext : DbContext
     {
-        private DbSet<Domain._TextLog> _textLogs { get; set; }
+        private DbSet<Domain.__TextLog> __TextLogs { get; set; }
         private DbSet<Domain.Customer> Customers { get; set; }
         private DbSet<Domain.CreditCard> CreditCards { get; set; }
         private DbSet<Domain.CcType> CcTypes { get; set; }

@@ -27,17 +27,15 @@ namespace Blackbox.Server.Migrations
 
                     b.Property<double>("Balance");
 
-                    b.Property<int>("CcType");
+                    b.Property<int>("CcTypeId");
 
                     b.Property<DateTime>("CreatedAt");
 
-                    b.Property<int?>("CreditCardId");
-
-                    b.Property<int?>("CustomerId");
+                    b.Property<int>("CustomerId");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CreditCardId");
+                    b.HasIndex("CcTypeId");
 
                     b.HasIndex("CustomerId");
 
@@ -50,9 +48,11 @@ namespace Blackbox.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("AccountId");
+
                     b.Property<DateTime>("CreatedAt");
 
-                    b.Property<string>("Description");
+                    b.Property<string>("TypeName");
 
                     b.HasKey("Id");
 
@@ -65,6 +65,8 @@ namespace Blackbox.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<int>("AccountId");
+
                     b.Property<string>("CcNumber");
 
                     b.Property<DateTime>("CreatedAt");
@@ -72,6 +74,9 @@ namespace Blackbox.Server.Migrations
                     b.Property<string>("PinNumber");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AccountId")
+                        .IsUnique();
 
                     b.ToTable("CreditCards");
                 });
@@ -81,6 +86,8 @@ namespace Blackbox.Server.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountId");
 
                     b.Property<DateTime>("CreatedAt");
 
@@ -95,7 +102,7 @@ namespace Blackbox.Server.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("Blackbox.Server.Domain._TextLog", b =>
+            modelBuilder.Entity("Blackbox.Server.Domain.__TextLog", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -109,18 +116,28 @@ namespace Blackbox.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("_textLogs");
+                    b.ToTable("__TextLogs");
                 });
 
             modelBuilder.Entity("Blackbox.Server.Domain.Account", b =>
                 {
-                    b.HasOne("Blackbox.Server.Domain.CreditCard", "CreditCard")
-                        .WithMany()
-                        .HasForeignKey("CreditCardId");
+                    b.HasOne("Blackbox.Server.Domain.CcType", "CcType")
+                        .WithMany("Accounts")
+                        .HasForeignKey("CcTypeId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Blackbox.Server.Domain.Customer", "Customer")
-                        .WithMany("Account")
-                        .HasForeignKey("CustomerId");
+                        .WithMany("Accounts")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("Blackbox.Server.Domain.CreditCard", b =>
+                {
+                    b.HasOne("Blackbox.Server.Domain.Account", "Account")
+                        .WithOne("CreditCard")
+                        .HasForeignKey("Blackbox.Server.Domain.CreditCard", "AccountId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

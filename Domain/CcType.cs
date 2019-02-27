@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Blackbox.Server.Domain
 {
@@ -11,7 +8,9 @@ namespace Blackbox.Server.Domain
         public CcType() => CreatedAt = DateTime.Now;
 
         public int Id { get; set; }
-        public string Description { get; set; }
+        public List<Account> Accounts { get; set; }
+        public int AccountId { get; set; }
+        public string TypeName { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }

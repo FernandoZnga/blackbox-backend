@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Blackbox.Server.Domain
 {
@@ -12,9 +8,11 @@ namespace Blackbox.Server.Domain
 
         public int Id { get; set; }
         public Customer Customer { get; set; }
+        public int CustomerId { get; set; }
         public CreditCard CreditCard { get; set; }
         public double Balance { get; set; }
-        public int CcType { get; set; }
+        public CcType CcType { get; set; }
+        public int CcTypeId { get; set; }
         public DateTime CreatedAt { get; set; }
     }
 }
