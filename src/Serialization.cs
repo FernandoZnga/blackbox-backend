@@ -1,18 +1,9 @@
-using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
- 
-// Used to serialize an object to binary format
-using System.Runtime.Serialization.Formatters.Binary;
- 
-// Used to serialize into XML
 using System.Xml.Serialization;
 using System.IO;
 
 namespace Blackbox.Server
 {
-	class Serialization
+    class Serialization
 	{
 		static void SerializeCcPinNumber(string ccNumber, string pinNumber)
 		{
