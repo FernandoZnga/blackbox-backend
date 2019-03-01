@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Blackbox.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20190227060906_init")]
+    [Migration("20190301030316_init")]
     partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,8 +50,6 @@ namespace Blackbox.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AccountId");
-
                     b.Property<DateTime>("CreatedAt");
 
                     b.Property<string>("TypeName");
@@ -88,8 +86,6 @@ namespace Blackbox.Server.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AccountId");
 
                     b.Property<DateTime>("CreatedAt");
 

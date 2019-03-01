@@ -48,8 +48,6 @@ namespace Blackbox.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("AccountId");
-
                     b.Property<DateTime>("CreatedAt");
 
                     b.Property<string>("TypeName");
@@ -86,8 +84,6 @@ namespace Blackbox.Server.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AccountId");
 
                     b.Property<DateTime>("CreatedAt");
 

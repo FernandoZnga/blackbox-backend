@@ -222,13 +222,17 @@
     <Compile Include="Domain\CreditCard.cs" />
     <Compile Include="Domain\Customer.cs" />
     <Compile Include="Domain\__TextLog.cs" />
-    <Compile Include="Migrations\20190227060906_init.cs" />
-    <Compile Include="Migrations\20190227060906_init.designer.cs">
-      <DependentUpon>20190227060906_init.cs</DependentUpon>
+    <Compile Include="Migrations\20190301030316_init.cs" />
+    <Compile Include="Migrations\20190301030316_init.designer.cs">
+      <DependentUpon>20190301030316_init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\DataContextModelSnapshot.cs" />
+    <Compile Include="Prop\AccountBalance.cs" />
+    <Compile Include="Prop\AccountBalanceResponse.cs" />
     <Compile Include="Prop\CcPinNumber.cs" />
-    <Compile Include="Prop\Handler.cs" />
+    <Compile Include="Prop\CcPinNumberResponse.cs" />
+    <Compile Include="Prop\GeneralResponse.cs" />
+    <Compile Include="Prop\Handle.cs" />
     <Compile Include="src\Serialization.cs" />
     <Compile Include="src\SocketConn.cs" />
     <Compile Include="Main.cs">

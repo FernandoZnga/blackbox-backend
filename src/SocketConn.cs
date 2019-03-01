@@ -1,4 +1,5 @@
-﻿using System;  
+﻿using Blackbox.Server.Prop;
+using System;  
 using System.Net;  
 using System.Net.Sockets;  
 using System.Text;  
@@ -85,7 +86,7 @@ namespace Blackbox.Server
 		    }  
 		  
 		    public static void ReadCallback(IAsyncResult ar) {  
-		        String content = String.Empty;  
+		       string content = string.Empty;  
 		  
 		        // Retrieve the state object and the handler socket  
 		        // from the asynchronous state object.  
@@ -103,13 +104,16 @@ namespace Blackbox.Server
 		            // Check for end-of-file tag. If it is not there, read   
 		            // more data.  
 		            content = state.sb.ToString();  
-		            if (content.IndexOf("<EOF>") > -1) {  
-		                // All the data has been read from the   
-		                // client. Display it on the console.  
-		                Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",  
-		                    content.Length, content );  
+		            if (content.IndexOf("<EOF>") > -1) {
+                        // All the data has been read from the   
+                        // client. Display it on the console.  
+                        Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
+                            content.Length, content);
+                        // Here goes to action
+                        var responseContent = Handle.ReadText(content);
+                        //
 		                // Echo the data back to the client.  
-		                Send(handler, content);  
+		                Send(handler, responseContent);  
 		            } else {  
 		                // Not all data received. Get more.  
 		                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,  

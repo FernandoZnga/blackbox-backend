@@ -2,7 +2,7 @@
 
 namespace Blackbox.Server.Domain
 {
-    class __TextLog
+    public class __TextLog
     {
         public __TextLog() => CreatedAt = DateTime.Now;
 

@@ -29,7 +29,6 @@ namespace Blackbox.Server.Migrations
                 {
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    AccountId = table.Column<int>(nullable: false),
                     TypeName = table.Column<string>(nullable: true),
                     CreatedAt = table.Column<DateTime>(nullable: false)
                 },
@@ -47,7 +46,6 @@ namespace Blackbox.Server.Migrations
                     FirstName = table.Column<string>(nullable: true),
                     MiddleName = table.Column<string>(nullable: true),
                     LastName = table.Column<string>(nullable: true),
-                    AccountId = table.Column<int>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
@@ -62,8 +60,8 @@ namespace Blackbox.Server.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     CustomerId = table.Column<int>(nullable: false),
-                    Balance = table.Column<double>(nullable: false),
                     CcTypeId = table.Column<int>(nullable: false),
+                    Balance = table.Column<double>(nullable: false),
                     CreatedAt = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
