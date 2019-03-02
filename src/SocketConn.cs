@@ -1,4 +1,5 @@
-﻿using Blackbox.Server.Prop;
+﻿using Blackbox.Server.Domain;
+using Blackbox.Server.Prop;
 using System;  
 using System.Net;  
 using System.Net.Sockets;  
@@ -110,10 +111,29 @@ namespace Blackbox.Server
                         Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
                             content.Length, content);
                         // Here goes to action
-                        var responseContent = Handle.ReadText(content);
+                        var md5IN = content.Substring(content.IndexOf("<Key>", 0) + 5, content.IndexOf("</Key>", 0) - content.IndexOf("<Key>", 0) - 5);
+                        __TextLog logTextIN = new __TextLog
+                        {
+                            XmlText = content,
+                            Md5IN = md5IN
+                        };
+                        //Log.Save(textLogIn);
+                        var responseContent = Handle.ReadText(content, logTextIN);
                         //
-		                // Echo the data back to the client.  
-		                Send(handler, responseContent);  
+                        // Echo the data back to the client. 
+                        var md5OUT = responseContent.Substring(responseContent.IndexOf("<Key>", 0) + 5, responseContent.IndexOf("</Key>", 0) - responseContent.IndexOf("<Key>", 0) - 5);
+                        var transaction = responseContent.Substring(responseContent.IndexOf("<", 1) + 1, responseContent.IndexOf("xmlns:xsi", 0) - responseContent.IndexOf("<", 1) - 1);
+                        __TextLog logTextOUT = new __TextLog
+                        {
+                            XmlText = responseContent,
+                            Direction = "OUT",
+                            Md5OUT = md5OUT,
+                            Transaction = transaction
+                        };
+                        Log.Save(logTextOUT);
+                        Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
+                            content.Length, responseContent);
+                        Send(handler, responseContent);  
 		            } else {  
 		                // Not all data received. Get more.  
 		                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,  
