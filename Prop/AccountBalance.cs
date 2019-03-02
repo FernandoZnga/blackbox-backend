@@ -6,11 +6,14 @@ namespace Blackbox.Server.Prop
     public class AccountBalance
     {
         public int AccountId { get; set; }
+        public string Key { get; set; }
 
         public AccountBalance() { }
-        public AccountBalance(int account)
+        public AccountBalance(int accountId) => AccountId = AccountId;
+        public AccountBalance(int accountId, string key)
         {
-            AccountId = account;
+            AccountId = accountId;
+            Key = key;
         }
     }
 }

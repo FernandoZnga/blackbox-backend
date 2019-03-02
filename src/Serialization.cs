@@ -1,6 +1,8 @@
 using System.Xml.Serialization;
 using System.IO;
 using Blackbox.Server.Prop;
+using Blackbox.Client.src;
+using System;
 
 namespace Blackbox.Server
 {
@@ -17,7 +19,10 @@ namespace Blackbox.Server
             using (StringWriter stringWriter = new StringWriter())
             {
                 xml.Serialize(stringWriter, generalResponse);
-                return stringWriter.ToString();
+                generalResponse.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, generalResponse);
+                return stringWriterNew.ToString();
             };
         }
         // This section serialize the Credit Card Number and Pin Number -- not use for server
@@ -66,9 +71,28 @@ namespace Blackbox.Server
             using (StringWriter stringWriter = new StringWriter())
             {
                 xml.Serialize(stringWriter, accountInfo);
+                accountInfo.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, accountInfo);
+                return stringWriterNew.ToString();
+            }
+        }
+
+        internal static string SerializeAccountBalance(int accountId)
+        {
+            AccountBalance accountBalance = new AccountBalance
+            {
+                AccountId = accountId
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(AccountBalance));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, accountBalance);
                 return stringWriter.ToString();
             }
         }
+
         public static string SerializeAccountBalanceResponse(int accountId, double balance, int response)
         {
             AccountBalanceResponse accountInfo = new AccountBalanceResponse
@@ -82,7 +106,10 @@ namespace Blackbox.Server
             using (StringWriter stringWriter = new StringWriter())
             {
                 xml.Serialize(stringWriter, accountInfo);
-                return stringWriter.ToString();
+                accountInfo.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, accountInfo);
+                return stringWriterNew.ToString();
             }
         }
 	}
