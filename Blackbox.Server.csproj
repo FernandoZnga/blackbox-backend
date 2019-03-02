@@ -217,7 +217,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DataConn\DataContext.cs" />
-    <Compile Include="Domain\_TextLog.cs" />
+    <Compile Include="Domain\Account.cs" />
+    <Compile Include="Domain\CcType.cs" />
+    <Compile Include="Domain\CreditCard.cs" />
+    <Compile Include="Domain\Customer.cs" />
+    <Compile Include="Domain\__TextLog.cs" />
+    <Compile Include="Migrations\20190301030316_init.cs" />
+    <Compile Include="Migrations\20190301030316_init.designer.cs">
+      <DependentUpon>20190301030316_init.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\DataContextModelSnapshot.cs" />
+    <Compile Include="Prop\AccountBalance.cs" />
+    <Compile Include="Prop\AccountBalanceResponse.cs" />
+    <Compile Include="Prop\CcPinNumber.cs" />
+    <Compile Include="Prop\CcPinNumberResponse.cs" />
+    <Compile Include="Prop\GeneralResponse.cs" />
+    <Compile Include="Prop\Handle.cs" />
+    <Compile Include="src\Serialization.cs" />
     <Compile Include="src\SocketConn.cs" />
     <Compile Include="Main.cs">
       <SubType>Form</SubType>
