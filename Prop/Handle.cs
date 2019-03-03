@@ -116,11 +116,6 @@ namespace Blackbox.Server.Prop
                         }
                         else
                         {
-                            TxType txType = new TxType()
-                            {
-                                TypeName = "Withdraw"
-                            };
-
                             if (Account.CcTypeId == 1) // Credit
                             {
                                 Transaction transaction = new Transaction()
@@ -129,7 +124,7 @@ namespace Blackbox.Server.Prop
                                     BalanceBefore = Account.Balance,
                                     BalanceAfter = Account.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
-                                    TxType = txType
+                                    TxTypeId = 1
                                 };
 
                                 //Account.Balance += accountId.Amount;
@@ -149,7 +144,7 @@ namespace Blackbox.Server.Prop
                                         BalanceBefore = Account.Balance,
                                         BalanceAfter = Account.Balance -= accountId.Amount,
                                         Amount = accountId.Amount,
-                                        TxType = txType
+                                        TxTypeId = 1
                                     };
 
                                     //Account.Balance -= accountId.Amount;
