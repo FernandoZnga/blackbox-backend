@@ -1,5 +1,6 @@
 ﻿using Blackbox.Server.Domain;
 using Blackbox.Server.Prop;
+using Blackbox.Server.src;
 using System;  
 using System.Net;  
 using System.Net.Sockets;  
@@ -105,35 +106,44 @@ namespace Blackbox.Server
 		            // Check for end-of-file tag. If it is not there, read   
 		            // more data.  
 		            content = state.sb.ToString();  
-		            if (content.IndexOf("<EOF>") > -1) {
+		            if (content.IndexOf("==") > -1) {
                         // All the data has been read from the   
                         // client. Display it on the console.  
-                        Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
+                        Console.WriteLine("Read Encrypted {0} bytes from socket. \n Data : {1}",
                             content.Length, content);
                         // Here goes to action
-                        var md5IN = content.Substring(content.IndexOf("<Key>", 0) + 5, content.IndexOf("</Key>", 0) - content.IndexOf("<Key>", 0) - 5);
+                        //content = content.Substring(0, content.IndexOf("<EOF>", 0));
+                        var contentText = Encryption.Decrypt(content, "Security1234");
+                        Console.WriteLine("Read Decrypted {0} bytes from socket. \n Data : {1}",
+                            contentText.Length, contentText);
+
+                        var md5IN = contentText.Substring(contentText.IndexOf("<Key>", 0) + 5, contentText.IndexOf("</Key>", 0) - contentText.IndexOf("<Key>", 0) - 5);
                         __TextLog logTextIN = new __TextLog
                         {
-                            XmlText = content,
+                            DesText = content,
+                            XmlText = contentText,
                             Md5IN = md5IN
                         };
-                        //Log.Save(textLogIn);
-                        var responseContent = Handle.ReadText(content, logTextIN);
+                        var responseContent = Handle.ReadText(contentText, logTextIN);
                         //
                         // Echo the data back to the client. 
                         var md5OUT = responseContent.Substring(responseContent.IndexOf("<Key>", 0) + 5, responseContent.IndexOf("</Key>", 0) - responseContent.IndexOf("<Key>", 0) - 5);
                         var transaction = responseContent.Substring(responseContent.IndexOf("<", 1) + 1, responseContent.IndexOf("xmlns:xsi", 0) - responseContent.IndexOf("<", 1) - 1);
+                        var responseEncrypted = Encryption.Encrypt(responseContent, "Security1234");
                         __TextLog logTextOUT = new __TextLog
                         {
+                            DesText = responseEncrypted,
                             XmlText = responseContent,
                             Direction = "OUT",
                             Md5OUT = md5OUT,
                             Transaction = transaction
                         };
                         Log.Save(logTextOUT);
-                        Console.WriteLine("Read {0} bytes from socket. \n Data : {1}",
+                        Console.WriteLine("Sent Xml text {0} bytes from socket. \n Data : {1}",
                             content.Length, responseContent);
-                        Send(handler, responseContent);  
+                        Console.WriteLine("Sent Encrypted {0} bytes from socket. \n Data : {1}",
+                            content.Length, responseEncrypted);
+                        Send(handler, responseEncrypted);  
 		            } else {  
 		                // Not all data received. Get more.  
 		                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,  

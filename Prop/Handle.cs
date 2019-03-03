@@ -13,7 +13,7 @@ namespace Blackbox.Server.Prop
         
         public static string ReadText(string xmlText, __TextLog logText)
         {
-            xmlText = xmlText.Substring(0, xmlText.IndexOf("<EOF>", 0));
+            //xmlText = xmlText.Substring(0, xmlText.IndexOf("<EOF>", 0));
             XDocument xmlNode = XDocument.Parse(xmlText);
             foreach (var head in xmlNode.Elements())
             {
