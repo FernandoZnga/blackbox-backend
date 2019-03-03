@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Blackbox.Server.Domain
 {
@@ -6,6 +7,7 @@ namespace Blackbox.Server.Domain
     {
         public Account()
         {
+            Transactions = new List<Transaction>();
             Balance = 0;
             CreatedAt = DateTime.Now;
         }
@@ -18,5 +20,6 @@ namespace Blackbox.Server.Domain
         public int CcTypeId { get; set; }
         public double Balance { get; set; }
         public DateTime CreatedAt { get; set; }
+        public List<Transaction> Transactions { get; set; }
     }
 }

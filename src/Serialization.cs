@@ -41,19 +41,19 @@ namespace Blackbox.Server
                 return stringWriter.ToString();
 			};
 		}
-		public static CcPinNumber DeserializeCcPinNumber(string CardInfo)
+		public static CcPinNumber DeserializeCcPinNumber(string cardInfo)
 		{
             XmlSerializer xml = new XmlSerializer(typeof(CcPinNumber));
-			using (StringReader stringReader = new StringReader(CardInfo))
+			using (StringReader stringReader = new StringReader(cardInfo))
 			{
                 CcPinNumber ccPinNUmber = (CcPinNumber)xml.Deserialize(stringReader);
                 return ccPinNUmber;
             }
 		}
-        public static AccountBalance DeserializeAccountBalance(string AccountInfo)
+        public static AccountBalance DeserializeAccountBalance(string accountInfo)
         {
             XmlSerializer xml = new XmlSerializer(typeof(AccountBalance));
-            using (StringReader stringReader = new StringReader(AccountInfo))
+            using (StringReader stringReader = new StringReader(accountInfo))
             {
                 AccountBalance accountBalance = (AccountBalance)xml.Deserialize(stringReader);
                 return accountBalance;
@@ -112,5 +112,52 @@ namespace Blackbox.Server
                 return stringWriterNew.ToString();
             }
         }
-	}
+
+        internal static string SerializeWithdraw(int accountId, double amount)
+        {
+            Withdraw accountBalance = new Withdraw
+            {
+                AccountId = accountId,
+                Amount = amount
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(Withdraw));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, accountBalance);
+                return stringWriter.ToString();
+            }
+        }
+
+        public static Withdraw DeserializeWithdraw(string accountInfo)
+        {
+            XmlSerializer xml = new XmlSerializer(typeof(Withdraw));
+            using (StringReader stringReader = new StringReader(accountInfo))
+            {
+                Withdraw withdraw = (Withdraw)xml.Deserialize(stringReader);
+                return withdraw;
+            }
+        }
+
+        internal static string SerializeWithdrawResponse(int accountId, double newBalance, string accountTypeName, int response)
+        {
+            WithdrawResponse accountInfo = new WithdrawResponse
+            {
+                AccountId = accountId,
+                NewBalance = newBalance,
+                AccountTypeName = accountTypeName,
+                Response = response
+        };
+
+            XmlSerializer xml = new XmlSerializer(typeof(WithdrawResponse));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, accountInfo);
+                accountInfo.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, accountInfo);
+                return stringWriterNew.ToString();
+            }
+        }
+    }
 }
