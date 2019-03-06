@@ -166,6 +166,75 @@ namespace Blackbox.Server.Prop
                         }
                     }
                 }
+                else if (api == "Deposit")
+                {
+                    logText.Transaction = api;
+                    var accountId = Serialization.DeserializeDeposit(xmlText);
+                    Deposit deposit = new Deposit
+                    {
+                        AccountId = accountId.AccountId,
+                        Amount = accountId.Amount
+                    };
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializeDeposit(accountId.AccountId, accountId.Amount));
+                    logText.Md5OUT = md5OUT;
+                    Log.Save(logText);
+
+                    if (md5OUT != accountId.Key)
+                    {
+                        return Serialization.GeneralResponse(601).ToString();
+                    }
+                    else
+                    {
+                        var Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                        if (Account == null)
+                        {
+                            return Serialization.GeneralResponse(501).ToString();
+                        }
+                        else
+                        {
+                            if (Account.CcTypeId == 1) // Credit
+                            {
+                                Transaction transaction = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance -= accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 2
+                                };
+
+                                //Account.Balance += accountId.Amount;
+                                _context.Transactions.Add(transaction);
+                                _context.SaveChanges();
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+
+                                return Serialization.SerializeDepositResponse(Account.Id, Account.Balance, "Credit", 200);
+                            }
+                            else if (Account.CcTypeId == 2) // Debit
+                            {
+                                Transaction transaction = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance += accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 2
+                                };
+
+                                //Account.Balance -= accountId.Amount;
+                                _context.Transactions.Add(transaction);
+                                _context.SaveChanges();
+
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                return Serialization.SerializeDepositResponse(Account.Id, Account.Balance, "Debit", 200);
+                            }
+                            else
+                            {
+                                return Serialization.GeneralResponse(701).ToString();
+                            }
+                        }
+                    }
+                }
                 else
                 {
                     return Serialization.GeneralResponse(501).ToString();
