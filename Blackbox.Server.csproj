@@ -250,6 +250,8 @@
     <Compile Include="Prop\GeneralResponse.cs" />
     <Compile Include="Prop\Handle.cs" />
     <Compile Include="Prop\Log.cs" />
+    <Compile Include="Prop\Transfer.cs" />
+    <Compile Include="Prop\TransferResponse.cs" />
     <Compile Include="Prop\Withdraw.cs" />
     <Compile Include="Prop\WithdrawResponse.cs" />
     <Compile Include="src\Encryption.cs" />

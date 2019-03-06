@@ -235,6 +235,154 @@ namespace Blackbox.Server.Prop
                         }
                     }
                 }
+                else if (api == "Transfer")
+                {
+                    logText.Transaction = api;
+                    var accountId = Serialization.DeserializeTransfer(xmlText);
+                    Transfer transfer = new Transfer
+                    {
+                        AccountId = accountId.AccountId,
+                        Amount = accountId.Amount,
+                        AccountIdDestiny = accountId.AccountIdDestiny
+                    };
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializeTransfer(accountId.AccountId, accountId.Amount, accountId.AccountIdDestiny));
+                    logText.Md5OUT = md5OUT;
+                    Log.Save(logText);
+
+                    if (md5OUT != accountId.Key)
+                    {
+                        return Serialization.GeneralResponse(601).ToString();
+                    }
+                    else
+                    {
+                        var Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                        var AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
+                        if (Account == null || AccountDestiny == null)
+                        {
+                            return Serialization.GeneralResponse(501).ToString();
+                        }
+                        else
+                        {
+                            if (Account.CcTypeId == 1 && AccountDestiny.CcTypeId == 1) // Credit // Credit
+                            {
+                                Transaction transaction1 = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance += accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 4
+                                };
+                                Transaction transaction2 = new Transaction()
+                                {
+                                    Account = AccountDestiny,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance -= accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 3
+                                };
+
+                                //Account.Balance += accountId.Amount;
+                                _context.Transactions.Add(transaction1);
+                                _context.Transactions.Add(transaction2);
+                                _context.SaveChanges();
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
+
+                                return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Credit", AccountDestiny.Id, 200);
+                            }
+                            else if (Account.CcTypeId == 1 && AccountDestiny.CcTypeId == 2) // Credit // Debit
+                            {
+                                Transaction transaction1 = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance += accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 4
+                                };
+                                Transaction transaction2 = new Transaction()
+                                {
+                                    Account = AccountDestiny,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance += accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 3
+                                };
+
+                                //Account.Balance += accountId.Amount;
+                                _context.Transactions.Add(transaction1);
+                                _context.Transactions.Add(transaction2);
+                                _context.SaveChanges();
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
+
+                                return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Credit", AccountDestiny.Id, 200);
+                            }
+                            //------
+                            if (Account.CcTypeId == 2 && AccountDestiny.CcTypeId == 2) // Debit // Debit
+                            {
+                                Transaction transaction1 = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance -= accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 4
+                                };
+                                Transaction transaction2 = new Transaction()
+                                {
+                                    Account = AccountDestiny,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance += accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 3
+                                };
+
+                                //Account.Balance += accountId.Amount;
+                                _context.Transactions.Add(transaction1);
+                                _context.Transactions.Add(transaction2);
+                                _context.SaveChanges();
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
+
+                                return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Credit", AccountDestiny.Id, 200);
+                            }
+                            else if (Account.CcTypeId == 2 && AccountDestiny.CcTypeId == 1) // Debit // Credit
+                            {
+                                Transaction transaction1 = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance -= accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 4
+                                };
+                                Transaction transaction2 = new Transaction()
+                                {
+                                    Account = AccountDestiny,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance -= accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 3
+                                };
+
+                                //Account.Balance += accountId.Amount;
+                                _context.Transactions.Add(transaction1);
+                                _context.Transactions.Add(transaction2);
+                                _context.SaveChanges();
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
+
+                                return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Credit", AccountDestiny.Id, 200);
+                            }
+                            else
+                            {
+                                return Serialization.GeneralResponse(701).ToString();
+                            }
+                        }
+                    }
+                }
                 else
                 {
                     return Serialization.GeneralResponse(501).ToString();
