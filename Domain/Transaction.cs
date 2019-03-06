@@ -18,5 +18,6 @@ namespace Blackbox.Server.Domain
         public TxType TxType { get; set; }
         public int TxTypeId { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string AccountTypeName { get; set; }
     }
 }

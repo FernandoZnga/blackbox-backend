@@ -124,7 +124,8 @@ namespace Blackbox.Server.Prop
                                     BalanceBefore = Account.Balance,
                                     BalanceAfter = Account.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
-                                    TxTypeId = 1
+                                    TxTypeId = 1,
+                                    AccountTypeName = "Credit"
                                 };
 
                                 //Account.Balance += accountId.Amount;
@@ -144,7 +145,8 @@ namespace Blackbox.Server.Prop
                                         BalanceBefore = Account.Balance,
                                         BalanceAfter = Account.Balance -= accountId.Amount,
                                         Amount = accountId.Amount,
-                                        TxTypeId = 1
+                                        TxTypeId = 1,
+                                        AccountTypeName = "Debit"
                                     };
 
                                     //Account.Balance -= accountId.Amount;
@@ -200,7 +202,8 @@ namespace Blackbox.Server.Prop
                                     BalanceBefore = Account.Balance,
                                     BalanceAfter = Account.Balance -= accountId.Amount,
                                     Amount = accountId.Amount,
-                                    TxTypeId = 2
+                                    TxTypeId = 2,
+                                    AccountTypeName = "Credit"
                                 };
 
                                 //Account.Balance += accountId.Amount;
@@ -218,7 +221,8 @@ namespace Blackbox.Server.Prop
                                     BalanceBefore = Account.Balance,
                                     BalanceAfter = Account.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
-                                    TxTypeId = 2
+                                    TxTypeId = 2,
+                                    AccountTypeName = "Debit"
                                 };
 
                                 //Account.Balance -= accountId.Amount;
@@ -271,15 +275,17 @@ namespace Blackbox.Server.Prop
                                     BalanceBefore = Account.Balance,
                                     BalanceAfter = Account.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
-                                    TxTypeId = 4
+                                    TxTypeId = 4,
+                                    AccountTypeName = "Credit"
                                 };
                                 Transaction transaction2 = new Transaction()
                                 {
                                     Account = AccountDestiny,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance -= accountId.Amount,
+                                    BalanceBefore = AccountDestiny.Balance,
+                                    BalanceAfter = AccountDestiny.Balance -= accountId.Amount,
                                     Amount = accountId.Amount,
-                                    TxTypeId = 3
+                                    TxTypeId = 3,
+                                    AccountTypeName = "Credit"
                                 };
 
                                 //Account.Balance += accountId.Amount;
@@ -299,15 +305,17 @@ namespace Blackbox.Server.Prop
                                     BalanceBefore = Account.Balance,
                                     BalanceAfter = Account.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
-                                    TxTypeId = 4
+                                    TxTypeId = 4,
+                                    AccountTypeName = "Credit"
                                 };
                                 Transaction transaction2 = new Transaction()
                                 {
                                     Account = AccountDestiny,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance += accountId.Amount,
+                                    BalanceBefore = AccountDestiny.Balance,
+                                    BalanceAfter = AccountDestiny.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
-                                    TxTypeId = 3
+                                    TxTypeId = 3,
+                                    AccountTypeName = "Debit"
                                 };
 
                                 //Account.Balance += accountId.Amount;
@@ -320,7 +328,7 @@ namespace Blackbox.Server.Prop
                                 return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Credit", AccountDestiny.Id, 200);
                             }
                             //------
-                            if (Account.CcTypeId == 2 && AccountDestiny.CcTypeId == 2) // Debit // Debit
+                            if (Account.CcTypeId == 2 && AccountDestiny.CcTypeId == 2 && Account.Balance >= accountId.Amount) // Debit // Debit
                             {
                                 Transaction transaction1 = new Transaction()
                                 {
@@ -328,15 +336,17 @@ namespace Blackbox.Server.Prop
                                     BalanceBefore = Account.Balance,
                                     BalanceAfter = Account.Balance -= accountId.Amount,
                                     Amount = accountId.Amount,
-                                    TxTypeId = 4
+                                    TxTypeId = 4,
+                                    AccountTypeName = "Debit"
                                 };
                                 Transaction transaction2 = new Transaction()
                                 {
                                     Account = AccountDestiny,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance += accountId.Amount,
+                                    BalanceBefore = AccountDestiny.Balance,
+                                    BalanceAfter = AccountDestiny.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
-                                    TxTypeId = 3
+                                    TxTypeId = 3,
+                                    AccountTypeName = "Debit"
                                 };
 
                                 //Account.Balance += accountId.Amount;
@@ -346,9 +356,9 @@ namespace Blackbox.Server.Prop
                                 Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
                                 AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
 
-                                return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Credit", AccountDestiny.Id, 200);
+                                return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Debit", AccountDestiny.Id, 200);
                             }
-                            else if (Account.CcTypeId == 2 && AccountDestiny.CcTypeId == 1) // Debit // Credit
+                            else if (Account.CcTypeId == 2 && AccountDestiny.CcTypeId == 1 && Account.Balance >= accountId.Amount) // Debit // Credit
                             {
                                 Transaction transaction1 = new Transaction()
                                 {
@@ -356,15 +366,17 @@ namespace Blackbox.Server.Prop
                                     BalanceBefore = Account.Balance,
                                     BalanceAfter = Account.Balance -= accountId.Amount,
                                     Amount = accountId.Amount,
-                                    TxTypeId = 4
+                                    TxTypeId = 4,
+                                    AccountTypeName = "Debit"
                                 };
                                 Transaction transaction2 = new Transaction()
                                 {
                                     Account = AccountDestiny,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance -= accountId.Amount,
+                                    BalanceBefore = AccountDestiny.Balance,
+                                    BalanceAfter = AccountDestiny.Balance -= accountId.Amount,
                                     Amount = accountId.Amount,
-                                    TxTypeId = 3
+                                    TxTypeId = 3,
+                                    AccountTypeName = "Credit"
                                 };
 
                                 //Account.Balance += accountId.Amount;
@@ -374,7 +386,7 @@ namespace Blackbox.Server.Prop
                                 Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
                                 AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
 
-                                return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Credit", AccountDestiny.Id, 200);
+                                return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Debit", AccountDestiny.Id, 200);
                             }
                             else
                             {
