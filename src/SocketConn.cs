@@ -106,9 +106,10 @@ namespace Blackbox.Server
 		            // Check for end-of-file tag. If it is not there, read   
 		            // more data.  
 		            content = state.sb.ToString();  
-		            if (content.IndexOf("==") > -1) {
+		            if (content.IndexOf("<EOF>") > -1) {
                         // All the data has been read from the   
                         // client. Display it on the console.  
+                        content = content.Substring(0, content.IndexOf("<EOF>", 0));
                         Console.WriteLine("Read Encrypted {0} bytes from socket. \n Data : {1}",
                             content.Length, content);
                         // Here goes to action

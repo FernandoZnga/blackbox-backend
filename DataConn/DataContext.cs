@@ -1,14 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Blackbox.Server.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace Blackbox.Server.DataConn
 {
     public class DataContext : DbContext
     {
-        public DbSet<Domain.__TextLog> __TextLogs { get; set; }
-        public DbSet<Domain.Customer> Customers { get; set; }
-        public DbSet<Domain.CreditCard> CreditCards { get; set; }
-        public DbSet<Domain.CcType> CcTypes { get; set; }
-        public DbSet<Domain.Account> Accounts { get; set; }
+        public DbSet<__TextLog> __TextLogs { get; set; }
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<CreditCard> CreditCards { get; set; }
+        public DbSet<CcType> CcTypes { get; set; }
+        public DbSet<Account> Accounts { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<TxType> TxTypes { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

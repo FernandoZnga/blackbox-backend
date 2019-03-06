@@ -16,8 +16,40 @@ namespace Blackbox.Server
             //Application.EnableVisualStyles();
             //Application.SetCompatibleTextRenderingDefault(false);
             //Application.Run(new Main());
+
+
+            // Dummy data and Initial Data
             //InsertDummyData();
+            //InsertTrTypeData();
+
+            // Run Server
             SocketConn.AsynchronousSocketListener.StartListening();
+        }
+
+        private static void InsertTrTypeData()
+        {
+            var txTypeWithdraw = new TxType()
+            {
+                TypeName = "Withdraw"
+            };
+            var txTypeDeposit = new TxType()
+            {
+                TypeName = "Deposit"
+            };
+            var txTypeTransfIn = new TxType()
+            {
+                TypeName = "Transf-IN"
+            };
+            var txTypeTransfOut = new TxType()
+            {
+                TypeName = "Transf-OUT"
+            };
+
+            using (var context = new DataContext())
+            {
+                context.TxTypes.AddRange(txTypeWithdraw, txTypeDeposit, txTypeTransfIn, txTypeTransfOut);
+                context.SaveChanges();
+            }
         }
 
         static void InsertDummyData()
