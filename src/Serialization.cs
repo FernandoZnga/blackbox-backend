@@ -159,5 +159,51 @@ namespace Blackbox.Server
                 return stringWriterNew.ToString();
             }
         }
+
+        internal static Deposit DeserializeDeposit(string accountInfo)
+        {
+            XmlSerializer xml = new XmlSerializer(typeof(Deposit));
+            using (StringReader stringReader = new StringReader(accountInfo))
+            {
+                return (Deposit)xml.Deserialize(stringReader);
+            }
+        }
+
+        internal static string SerializeDeposit(int accountId, double amount)
+        {
+            Deposit accountBalance = new Deposit
+            {
+                AccountId = accountId,
+                Amount = amount
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(Deposit));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, accountBalance);
+                return stringWriter.ToString();
+            }
+        }
+
+        internal static string SerializeDepositResponse(int accountId, double newBalance, string accountTypeName, int response)
+        {
+            DepositResponse accountInfo = new DepositResponse
+            {
+                AccountId = accountId,
+                NewBalance = newBalance,
+                AccountTypeName = accountTypeName,
+                Response = response
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(DepositResponse));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, accountInfo);
+                accountInfo.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, accountInfo);
+                return stringWriterNew.ToString();
+            }
+        }
     }
 }

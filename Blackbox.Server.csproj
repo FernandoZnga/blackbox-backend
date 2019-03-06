@@ -245,6 +245,8 @@
     <Compile Include="Prop\AccountBalanceResponse.cs" />
     <Compile Include="Prop\CcPinNumber.cs" />
     <Compile Include="Prop\CcPinNumberResponse.cs" />
+    <Compile Include="Prop\Deposit.cs" />
+    <Compile Include="Prop\DepositResponse.cs" />
     <Compile Include="Prop\GeneralResponse.cs" />
     <Compile Include="Prop\Handle.cs" />
     <Compile Include="Prop\Log.cs" />
