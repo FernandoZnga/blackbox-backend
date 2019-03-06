@@ -205,5 +205,53 @@ namespace Blackbox.Server
                 return stringWriterNew.ToString();
             }
         }
+
+        internal static Transfer DeserializeTransfer(string accountInfo)
+        {
+            XmlSerializer xml = new XmlSerializer(typeof(Transfer));
+            using (StringReader stringReader = new StringReader(accountInfo))
+            {
+                return (Transfer)xml.Deserialize(stringReader);
+            }
+        }
+
+        internal static string SerializeTransfer(int accountId, double amount, int accountIdDestiny)
+        {
+            Transfer accountInfo = new Transfer
+            {
+                AccountId = accountId,
+                Amount = amount,
+                AccountIdDestiny = accountIdDestiny
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(Transfer));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, accountInfo);
+                return stringWriter.ToString();
+            }
+        }
+
+        internal static string SerializeTransferResponse(int accountId, double newBalance, string accountTypeName, int accountIdDestiny, int response)
+        {
+            TransferResponse accountInfo = new TransferResponse
+            {
+                AccountId = accountId,
+                NewBalance = newBalance,
+                AccountTypeName = accountTypeName,
+                AccountIdDestiny = accountIdDestiny,
+                Response = response
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(TransferResponse));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, accountInfo);
+                accountInfo.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, accountInfo);
+                return stringWriterNew.ToString();
+            }
+        }
     }
 }

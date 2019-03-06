@@ -15,7 +15,6 @@ namespace Blackbox.Server.Prop
             AccountId = AccountId;
             Amount = amount;
         }
-
         public Deposit(int accountId, double amount, string key)
         {
             AccountId = accountId;

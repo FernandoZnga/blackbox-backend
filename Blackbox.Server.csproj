@@ -240,6 +240,10 @@
     <Compile Include="Migrations\20190303174018_Add-Withdraw-Table-Feature.designer.cs">
       <DependentUpon>20190303174018_Add-Withdraw-Table-Feature.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20190306182106_NewField-AccountTypeName-Transactions-Table.cs" />
+    <Compile Include="Migrations\20190306182106_NewField-AccountTypeName-Transactions-Table.designer.cs">
+      <DependentUpon>20190306182106_NewField-AccountTypeName-Transactions-Table.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DataContextModelSnapshot.cs" />
     <Compile Include="Prop\AccountBalance.cs" />
     <Compile Include="Prop\AccountBalanceResponse.cs" />
@@ -250,6 +254,8 @@
     <Compile Include="Prop\GeneralResponse.cs" />
     <Compile Include="Prop\Handle.cs" />
     <Compile Include="Prop\Log.cs" />
+    <Compile Include="Prop\Transfer.cs" />
+    <Compile Include="Prop\TransferResponse.cs" />
     <Compile Include="Prop\Withdraw.cs" />
     <Compile Include="Prop\WithdrawResponse.cs" />
     <Compile Include="src\Encryption.cs" />
