@@ -30,7 +30,6 @@ namespace Blackbox.Server.Prop
                     };
                     var md5OUT = GenerateKey.MD5(Serialization.SerializeCcPinNumber(ccNumber.CcNumber, ccNumber.PinNumber, ccNumber.AtmId));
                     logText.Md5OUT = md5OUT;
-                    logText.AtmId = ccNumber.AtmId;
                     Log.Save(logText);
 
                     if (md5OUT != ccNumber.Key)
@@ -74,7 +73,6 @@ namespace Blackbox.Server.Prop
                     };
                     var md5OUT = GenerateKey.MD5(Serialization.SerializeAccountBalance(account.AccountId, account.AtmId));
                     logText.Md5OUT = md5OUT;
-                    logText.AtmId = accountId.AtmId;
                     Log.Save(logText);
 
                     if (md5OUT != accountId.Key)
@@ -106,7 +104,6 @@ namespace Blackbox.Server.Prop
                     };
                     var md5OUT = GenerateKey.MD5(Serialization.SerializeWithdraw(accountId.AccountId, accountId.Amount, accountId.AtmId));
                     logText.Md5OUT = md5OUT;
-                    logText.AtmId = accountId.AtmId;
                     Log.Save(logText);
 
                     if (md5OUT != accountId.Key)
@@ -187,7 +184,6 @@ namespace Blackbox.Server.Prop
                     };
                     var md5OUT = GenerateKey.MD5(Serialization.SerializeDeposit(accountId.AccountId, accountId.Amount, accountId.AtmId));
                     logText.Md5OUT = md5OUT;
-                    logText.AtmId = accountId.AtmId;
                     Log.Save(logText);
 
                     if (md5OUT != accountId.Key)
@@ -262,7 +258,6 @@ namespace Blackbox.Server.Prop
                     };
                     var md5OUT = GenerateKey.MD5(Serialization.SerializeTransfer(accountId.AccountId, accountId.Amount, accountId.AccountIdDestiny, accountId.AtmId));
                     logText.Md5OUT = md5OUT;
-                    logText.AtmId = accountId.AtmId;
                     Log.Save(logText);
 
                     if (md5OUT != accountId.Key)

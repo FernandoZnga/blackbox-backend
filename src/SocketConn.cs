@@ -120,11 +120,13 @@ namespace Blackbox.Server
                             contentText.Length, contentText);
 
                         var md5IN = contentText.Substring(contentText.IndexOf("<Key>", 0) + 5, contentText.IndexOf("</Key>", 0) - contentText.IndexOf("<Key>", 0) - 5);
+                        var atmId = contentText.Substring(contentText.IndexOf("<AtmId>", 0) + 7, contentText.IndexOf("</AtmId>", 0) - contentText.IndexOf("<AtmId>", 0) - 7);
                         __TextLog logTextIN = new __TextLog
                         {
                             DesText = content,
                             XmlText = contentText,
-                            Md5IN = md5IN
+                            Md5IN = md5IN,
+                            AtmId = atmId
                         };
                         var responseContent = Handle.ReadText(contentText, logTextIN);
                         //
@@ -138,7 +140,8 @@ namespace Blackbox.Server
                             XmlText = responseContent,
                             Direction = "OUT",
                             Md5OUT = md5OUT,
-                            Transaction = transaction
+                            Transaction = transaction,
+                            AtmId = atmId
                         };
                         Log.Save(logTextOUT);
                         Console.WriteLine("Sent Xml text {0} bytes from socket. \n Data : {1}",
