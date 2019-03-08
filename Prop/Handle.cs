@@ -1,9 +1,7 @@
-﻿using Blackbox.Server.DataConn;
-using System;
-using System.Collections.Generic;
+﻿using Blackbox.Client.src;
+using Blackbox.Server.DataConn;
+using Blackbox.Server.Domain;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace Blackbox.Server.Prop
@@ -13,51 +11,403 @@ namespace Blackbox.Server.Prop
         private static DataContext _context = new DataContext();
         public static string api;
         
-        public static string ReadText(string xmlText)
+        public static string ReadText(string xmlText, __TextLog logText)
         {
-            xmlText = xmlText.Substring(0, xmlText.IndexOf("<EOF>", 0));
+            //xmlText = xmlText.Substring(0, xmlText.IndexOf("<EOF>", 0));
             XDocument xmlNode = XDocument.Parse(xmlText);
             foreach (var head in xmlNode.Elements())
             {
                 api = head.Name.ToString();
                 if (api == "CcPinNumber")
                 {
+                    logText.Transaction = api;
                     var ccNumber = Serialization.DeserializeCcPinNumber(xmlText);
-                    var CreditCard = _context.CreditCards.FirstOrDefault(s => s.CcNumber == ccNumber.CcNumber);
-                    if (CreditCard == null)
+                    CcPinNumber ccPinNumber = new CcPinNumber
                     {
-                        return Serialization.GeneralResponse(500).ToString();
-                    }
-                    else if (CreditCard.PinNumber != ccNumber.PinNumber)
+                        CcNumber = ccNumber.CcNumber,
+                        PinNumber = ccNumber.PinNumber,
+                        AtmId = ccNumber.AtmId
+                    };
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializeCcPinNumber(ccNumber.CcNumber, ccNumber.PinNumber, ccNumber.AtmId));
+                    logText.Md5OUT = md5OUT;
+                    Log.Save(logText);
+
+                    if (md5OUT != ccNumber.Key)
                     {
-                        return Serialization.GeneralResponse(500).ToString();
+                        return Serialization.GeneralResponse(601).ToString();
                     }
                     else
                     {
-                        var account = _context.Accounts.FirstOrDefault(s => s.CreditCard.CcNumber == ccNumber.CcNumber);
-                        //account.Id;
-                        if (account == null)
+                        var CreditCard = _context.CreditCards.FirstOrDefault(s => s.CcNumber == ccNumber.CcNumber);
+                        if (CreditCard == null)
+                        {
+                            return Serialization.GeneralResponse(500).ToString();
+                        }
+                        else if (CreditCard.PinNumber != ccNumber.PinNumber)
                         {
                             return Serialization.GeneralResponse(500).ToString();
                         }
                         else
                         {
-                            return Serialization.SerializeCcPinNumberResponse(account.Id, 200).ToString();
+                            var account = _context.Accounts.FirstOrDefault(s => s.CreditCard.CcNumber == ccNumber.CcNumber);
+                            //account.Id;
+                            if (account == null)
+                            {
+                                return Serialization.GeneralResponse(500).ToString();
+                            }
+                            else
+                            {
+                                return Serialization.SerializeCcPinNumberResponse(account.Id, 200).ToString();
+                            }
                         }
                     }
                 }
                 else if (api == "AccountBalance")
                 {
+                    logText.Transaction = api;
                     var accountId = Serialization.DeserializeAccountBalance(xmlText);
-                    var Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
-                    if (Account == null)
+                    AccountBalance account = new AccountBalance
                     {
-                        return Serialization.GeneralResponse(501).ToString();
+                        AccountId = accountId.AccountId,
+                        AtmId = accountId.AtmId
+                    };
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializeAccountBalance(account.AccountId, account.AtmId));
+                    logText.Md5OUT = md5OUT;
+                    Log.Save(logText);
+
+                    if (md5OUT != accountId.Key)
+                    {
+                        return Serialization.GeneralResponse(601).ToString();
                     }
                     else
                     {
+                        var Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                        if (Account == null)
+                        {
+                            return Serialization.GeneralResponse(501).ToString();
+                        }
+                        else
+                        {
+                            return Serialization.SerializeAccountBalanceResponse(Account.Id, Account.Balance, 201).ToString();
+                        }
+                    }
+                }
+                else if (api == "Withdraw")
+                {
+                    logText.Transaction = api;
+                    var accountId = Serialization.DeserializeWithdraw(xmlText);
+                    Withdraw withdraw = new Withdraw
+                    {
+                        AccountId = accountId.AccountId,
+                        Amount = accountId.Amount,
+                        AtmId = accountId.AtmId
+                    };
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializeWithdraw(accountId.AccountId, accountId.Amount, accountId.AtmId));
+                    logText.Md5OUT = md5OUT;
+                    Log.Save(logText);
 
-                        return Serialization.SerializeAccountBalanceResponse(Account.Id, Account.Balance, 201).ToString();
+                    if (md5OUT != accountId.Key)
+                    {
+                        return Serialization.GeneralResponse(601).ToString();
+                    }
+                    else
+                    {
+                        var Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                        if (Account == null)
+                        {
+                            return Serialization.GeneralResponse(501).ToString();
+                        }
+                        else
+                        {
+                            if (Account.CcTypeId == 1) // Credit
+                            {
+                                Transaction transaction = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance += accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 1,
+                                    AccountTypeName = "Credit",
+                                    AtmId = accountId.AtmId
+                                };
+
+                                //Account.Balance += accountId.Amount;
+                                _context.Transactions.Add(transaction);
+                                _context.SaveChanges();
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+
+                                return Serialization.SerializeWithdrawResponse(Account.Id, Account.Balance, "Credit", 200);
+                            }
+                            else if (Account.CcTypeId == 2) // Debit
+                            {
+                                if (Account.Balance >= accountId.Amount)
+                                {
+                                    Transaction transaction = new Transaction()
+                                    {
+                                        Account = Account,
+                                        BalanceBefore = Account.Balance,
+                                        BalanceAfter = Account.Balance -= accountId.Amount,
+                                        Amount = accountId.Amount,
+                                        TxTypeId = 1,
+                                        AccountTypeName = "Debit",
+                                        AtmId = accountId.AtmId
+                                    };
+
+                                    //Account.Balance -= accountId.Amount;
+                                    _context.Transactions.Add(transaction);
+                                    _context.SaveChanges();
+
+                                    Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                    return Serialization.SerializeWithdrawResponse(Account.Id, Account.Balance, "Debit", 200);
+                                }
+                                else
+                                {
+                                    return Serialization.GeneralResponse(701).ToString();
+                                }
+                            }
+                            else
+                            {
+                                return Serialization.GeneralResponse(701).ToString();
+                            }
+                        }
+                    }
+                }
+                else if (api == "Deposit")
+                {
+                    logText.Transaction = api;
+                    var accountId = Serialization.DeserializeDeposit(xmlText);
+                    Deposit deposit = new Deposit
+                    {
+                        AccountId = accountId.AccountId,
+                        Amount = accountId.Amount
+                    };
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializeDeposit(accountId.AccountId, accountId.Amount, accountId.AtmId));
+                    logText.Md5OUT = md5OUT;
+                    Log.Save(logText);
+
+                    if (md5OUT != accountId.Key)
+                    {
+                        return Serialization.GeneralResponse(601).ToString();
+                    }
+                    else
+                    {
+                        var Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                        if (Account == null)
+                        {
+                            return Serialization.GeneralResponse(501).ToString();
+                        }
+                        else
+                        {
+                            if (Account.CcTypeId == 1) // Credit
+                            {
+                                Transaction transaction = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance -= accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 2,
+                                    AccountTypeName = "Credit",
+                                    AtmId = accountId.AtmId
+                                };
+
+                                //Account.Balance += accountId.Amount;
+                                _context.Transactions.Add(transaction);
+                                _context.SaveChanges();
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+
+                                return Serialization.SerializeDepositResponse(Account.Id, Account.Balance, "Credit", 200);
+                            }
+                            else if (Account.CcTypeId == 2) // Debit
+                            {
+                                Transaction transaction = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance += accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 2,
+                                    AccountTypeName = "Debit",
+                                    AtmId = accountId.AtmId
+                                };
+
+                                //Account.Balance -= accountId.Amount;
+                                _context.Transactions.Add(transaction);
+                                _context.SaveChanges();
+
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                return Serialization.SerializeDepositResponse(Account.Id, Account.Balance, "Debit", 200);
+                            }
+                            else
+                            {
+                                return Serialization.GeneralResponse(701).ToString();
+                            }
+                        }
+                    }
+                }
+                else if (api == "Transfer")
+                {
+                    logText.Transaction = api;
+                    var accountId = Serialization.DeserializeTransfer(xmlText);
+                    Transfer transfer = new Transfer
+                    {
+                        AccountId = accountId.AccountId,
+                        Amount = accountId.Amount,
+                        AccountIdDestiny = accountId.AccountIdDestiny
+                    };
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializeTransfer(accountId.AccountId, accountId.Amount, accountId.AccountIdDestiny, accountId.AtmId));
+                    logText.Md5OUT = md5OUT;
+                    Log.Save(logText);
+
+                    if (md5OUT != accountId.Key)
+                    {
+                        return Serialization.GeneralResponse(601).ToString();
+                    }
+                    else
+                    {
+                        var Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                        var AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
+                        if (Account == null || AccountDestiny == null)
+                        {
+                            return Serialization.GeneralResponse(501).ToString();
+                        }
+                        else
+                        {
+                            if (Account.CcTypeId == 1 && AccountDestiny.CcTypeId == 1) // Credit // Credit
+                            {
+                                Transaction transaction1 = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance += accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 4,
+                                    AccountTypeName = "Credit",
+                                    AtmId = accountId.AtmId
+                                };
+                                Transaction transaction2 = new Transaction()
+                                {
+                                    Account = AccountDestiny,
+                                    BalanceBefore = AccountDestiny.Balance,
+                                    BalanceAfter = AccountDestiny.Balance -= accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 3,
+                                    AccountTypeName = "Credit",
+                                    AtmId = accountId.AtmId
+                                };
+
+                                //Account.Balance += accountId.Amount;
+                                _context.Transactions.Add(transaction1);
+                                _context.Transactions.Add(transaction2);
+                                _context.SaveChanges();
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
+
+                                return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Credit", AccountDestiny.Id, 200);
+                            }
+                            else if (Account.CcTypeId == 1 && AccountDestiny.CcTypeId == 2) // Credit // Debit
+                            {
+                                Transaction transaction1 = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance += accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 4,
+                                    AccountTypeName = "Credit",
+                                    AtmId = accountId.AtmId
+                                };
+                                Transaction transaction2 = new Transaction()
+                                {
+                                    Account = AccountDestiny,
+                                    BalanceBefore = AccountDestiny.Balance,
+                                    BalanceAfter = AccountDestiny.Balance += accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 3,
+                                    AccountTypeName = "Debit",
+                                    AtmId = accountId.AtmId
+                                };
+
+                                //Account.Balance += accountId.Amount;
+                                _context.Transactions.Add(transaction1);
+                                _context.Transactions.Add(transaction2);
+                                _context.SaveChanges();
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
+
+                                return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Credit", AccountDestiny.Id, 200);
+                            }
+                            //------
+                            if (Account.CcTypeId == 2 && AccountDestiny.CcTypeId == 2 && Account.Balance >= accountId.Amount) // Debit // Debit
+                            {
+                                Transaction transaction1 = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance -= accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 4,
+                                    AccountTypeName = "Debit",
+                                    AtmId = accountId.AtmId
+                                };
+                                Transaction transaction2 = new Transaction()
+                                {
+                                    Account = AccountDestiny,
+                                    BalanceBefore = AccountDestiny.Balance,
+                                    BalanceAfter = AccountDestiny.Balance += accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 3,
+                                    AccountTypeName = "Debit",
+                                    AtmId = accountId.AtmId
+                                };
+
+                                //Account.Balance += accountId.Amount;
+                                _context.Transactions.Add(transaction1);
+                                _context.Transactions.Add(transaction2);
+                                _context.SaveChanges();
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
+
+                                return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Debit", AccountDestiny.Id, 200);
+                            }
+                            else if (Account.CcTypeId == 2 && AccountDestiny.CcTypeId == 1 && Account.Balance >= accountId.Amount) // Debit // Credit
+                            {
+                                Transaction transaction1 = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance -= accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 4,
+                                    AccountTypeName = "Debit",
+                                    AtmId = accountId.AtmId
+                                };
+                                Transaction transaction2 = new Transaction()
+                                {
+                                    Account = AccountDestiny,
+                                    BalanceBefore = AccountDestiny.Balance,
+                                    BalanceAfter = AccountDestiny.Balance -= accountId.Amount,
+                                    Amount = accountId.Amount,
+                                    TxTypeId = 3,
+                                    AccountTypeName = "Credit",
+                                    AtmId = accountId.AtmId
+                                };
+
+                                //Account.Balance += accountId.Amount;
+                                _context.Transactions.Add(transaction1);
+                                _context.Transactions.Add(transaction2);
+                                _context.SaveChanges();
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
+
+                                return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Debit", AccountDestiny.Id, 200);
+                            }
+                            else
+                            {
+                                return Serialization.GeneralResponse(701).ToString();
+                            }
+                        }
                     }
                 }
                 else

@@ -4,14 +4,16 @@ using Blackbox.Server.DataConn;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Blackbox.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20190303174018_Add-Withdraw-Table-Feature")]
+    partial class AddWithdrawTableFeature
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,11 +108,7 @@ namespace Blackbox.Server.Migrations
 
                     b.Property<int>("AccountId");
 
-                    b.Property<string>("AccountTypeName");
-
                     b.Property<double>("Amount");
-
-                    b.Property<string>("AtmId");
 
                     b.Property<double>("BalanceAfter");
 
@@ -149,8 +147,6 @@ namespace Blackbox.Server.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("AtmId");
 
                     b.Property<DateTime>("CreatedAt");
 
