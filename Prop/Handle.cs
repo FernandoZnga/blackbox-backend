@@ -25,10 +25,12 @@ namespace Blackbox.Server.Prop
                     CcPinNumber ccPinNumber = new CcPinNumber
                     {
                         CcNumber = ccNumber.CcNumber,
-                        PinNumber = ccNumber.PinNumber
+                        PinNumber = ccNumber.PinNumber,
+                        AtmId = ccNumber.AtmId
                     };
-                    var md5OUT = GenerateKey.MD5(Serialization.SerializeCcPinNumber(ccNumber.CcNumber, ccNumber.PinNumber));
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializeCcPinNumber(ccNumber.CcNumber, ccNumber.PinNumber, ccNumber.AtmId));
                     logText.Md5OUT = md5OUT;
+                    logText.AtmId = ccNumber.AtmId;
                     Log.Save(logText);
 
                     if (md5OUT != ccNumber.Key)
@@ -67,10 +69,12 @@ namespace Blackbox.Server.Prop
                     var accountId = Serialization.DeserializeAccountBalance(xmlText);
                     AccountBalance account = new AccountBalance
                     {
-                        AccountId = accountId.AccountId
+                        AccountId = accountId.AccountId,
+                        AtmId = accountId.AtmId
                     };
-                    var md5OUT = GenerateKey.MD5(Serialization.SerializeAccountBalance(account.AccountId));
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializeAccountBalance(account.AccountId, account.AtmId));
                     logText.Md5OUT = md5OUT;
+                    logText.AtmId = accountId.AtmId;
                     Log.Save(logText);
 
                     if (md5OUT != accountId.Key)
@@ -97,10 +101,12 @@ namespace Blackbox.Server.Prop
                     Withdraw withdraw = new Withdraw
                     {
                         AccountId = accountId.AccountId,
-                        Amount = accountId.Amount
+                        Amount = accountId.Amount,
+                        AtmId = accountId.AtmId
                     };
-                    var md5OUT = GenerateKey.MD5(Serialization.SerializeWithdraw(accountId.AccountId, accountId.Amount));
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializeWithdraw(accountId.AccountId, accountId.Amount, accountId.AtmId));
                     logText.Md5OUT = md5OUT;
+                    logText.AtmId = accountId.AtmId;
                     Log.Save(logText);
 
                     if (md5OUT != accountId.Key)
@@ -125,7 +131,8 @@ namespace Blackbox.Server.Prop
                                     BalanceAfter = Account.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 1,
-                                    AccountTypeName = "Credit"
+                                    AccountTypeName = "Credit",
+                                    AtmId = accountId.AtmId
                                 };
 
                                 //Account.Balance += accountId.Amount;
@@ -146,7 +153,8 @@ namespace Blackbox.Server.Prop
                                         BalanceAfter = Account.Balance -= accountId.Amount,
                                         Amount = accountId.Amount,
                                         TxTypeId = 1,
-                                        AccountTypeName = "Debit"
+                                        AccountTypeName = "Debit",
+                                        AtmId = accountId.AtmId
                                     };
 
                                     //Account.Balance -= accountId.Amount;
@@ -177,8 +185,9 @@ namespace Blackbox.Server.Prop
                         AccountId = accountId.AccountId,
                         Amount = accountId.Amount
                     };
-                    var md5OUT = GenerateKey.MD5(Serialization.SerializeDeposit(accountId.AccountId, accountId.Amount));
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializeDeposit(accountId.AccountId, accountId.Amount, accountId.AtmId));
                     logText.Md5OUT = md5OUT;
+                    logText.AtmId = accountId.AtmId;
                     Log.Save(logText);
 
                     if (md5OUT != accountId.Key)
@@ -203,7 +212,8 @@ namespace Blackbox.Server.Prop
                                     BalanceAfter = Account.Balance -= accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 2,
-                                    AccountTypeName = "Credit"
+                                    AccountTypeName = "Credit",
+                                    AtmId = accountId.AtmId
                                 };
 
                                 //Account.Balance += accountId.Amount;
@@ -222,7 +232,8 @@ namespace Blackbox.Server.Prop
                                     BalanceAfter = Account.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 2,
-                                    AccountTypeName = "Debit"
+                                    AccountTypeName = "Debit",
+                                    AtmId = accountId.AtmId
                                 };
 
                                 //Account.Balance -= accountId.Amount;
@@ -249,8 +260,9 @@ namespace Blackbox.Server.Prop
                         Amount = accountId.Amount,
                         AccountIdDestiny = accountId.AccountIdDestiny
                     };
-                    var md5OUT = GenerateKey.MD5(Serialization.SerializeTransfer(accountId.AccountId, accountId.Amount, accountId.AccountIdDestiny));
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializeTransfer(accountId.AccountId, accountId.Amount, accountId.AccountIdDestiny, accountId.AtmId));
                     logText.Md5OUT = md5OUT;
+                    logText.AtmId = accountId.AtmId;
                     Log.Save(logText);
 
                     if (md5OUT != accountId.Key)
@@ -276,7 +288,8 @@ namespace Blackbox.Server.Prop
                                     BalanceAfter = Account.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 4,
-                                    AccountTypeName = "Credit"
+                                    AccountTypeName = "Credit",
+                                    AtmId = accountId.AtmId
                                 };
                                 Transaction transaction2 = new Transaction()
                                 {
@@ -285,7 +298,8 @@ namespace Blackbox.Server.Prop
                                     BalanceAfter = AccountDestiny.Balance -= accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 3,
-                                    AccountTypeName = "Credit"
+                                    AccountTypeName = "Credit",
+                                    AtmId = accountId.AtmId
                                 };
 
                                 //Account.Balance += accountId.Amount;
@@ -306,7 +320,8 @@ namespace Blackbox.Server.Prop
                                     BalanceAfter = Account.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 4,
-                                    AccountTypeName = "Credit"
+                                    AccountTypeName = "Credit",
+                                    AtmId = accountId.AtmId
                                 };
                                 Transaction transaction2 = new Transaction()
                                 {
@@ -315,7 +330,8 @@ namespace Blackbox.Server.Prop
                                     BalanceAfter = AccountDestiny.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 3,
-                                    AccountTypeName = "Debit"
+                                    AccountTypeName = "Debit",
+                                    AtmId = accountId.AtmId
                                 };
 
                                 //Account.Balance += accountId.Amount;
@@ -337,7 +353,8 @@ namespace Blackbox.Server.Prop
                                     BalanceAfter = Account.Balance -= accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 4,
-                                    AccountTypeName = "Debit"
+                                    AccountTypeName = "Debit",
+                                    AtmId = accountId.AtmId
                                 };
                                 Transaction transaction2 = new Transaction()
                                 {
@@ -346,7 +363,8 @@ namespace Blackbox.Server.Prop
                                     BalanceAfter = AccountDestiny.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 3,
-                                    AccountTypeName = "Debit"
+                                    AccountTypeName = "Debit",
+                                    AtmId = accountId.AtmId
                                 };
 
                                 //Account.Balance += accountId.Amount;
@@ -367,7 +385,8 @@ namespace Blackbox.Server.Prop
                                     BalanceAfter = Account.Balance -= accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 4,
-                                    AccountTypeName = "Debit"
+                                    AccountTypeName = "Debit",
+                                    AtmId = accountId.AtmId
                                 };
                                 Transaction transaction2 = new Transaction()
                                 {
@@ -376,7 +395,8 @@ namespace Blackbox.Server.Prop
                                     BalanceAfter = AccountDestiny.Balance -= accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 3,
-                                    AccountTypeName = "Credit"
+                                    AccountTypeName = "Credit",
+                                    AtmId = accountId.AtmId
                                 };
 
                                 //Account.Balance += accountId.Amount;

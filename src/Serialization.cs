@@ -26,12 +26,13 @@ namespace Blackbox.Server
             };
         }
         // This section serialize the Credit Card Number and Pin Number -- not use for server
-		public static string SerializeCcPinNumber(string ccNumber, string pinNumber)
+		public static string SerializeCcPinNumber(string ccNumber, string pinNumber, string atmId)
 		{
             CcPinNumber CardInfo = new CcPinNumber
             {
                 CcNumber = ccNumber,
-                PinNumber = pinNumber
+                PinNumber = pinNumber,
+                AtmId = atmId
             };
 
             XmlSerializer xml = new XmlSerializer(typeof(CcPinNumber));
@@ -78,11 +79,12 @@ namespace Blackbox.Server
             }
         }
 
-        internal static string SerializeAccountBalance(int accountId)
+        internal static string SerializeAccountBalance(int accountId, string atmId)
         {
             AccountBalance accountBalance = new AccountBalance
             {
-                AccountId = accountId
+                AccountId = accountId,
+                AtmId = atmId
             };
 
             XmlSerializer xml = new XmlSerializer(typeof(AccountBalance));
@@ -113,12 +115,13 @@ namespace Blackbox.Server
             }
         }
 
-        internal static string SerializeWithdraw(int accountId, double amount)
+        internal static string SerializeWithdraw(int accountId, double amount, string atmId)
         {
             Withdraw accountBalance = new Withdraw
             {
                 AccountId = accountId,
-                Amount = amount
+                Amount = amount,
+                AtmId = atmId
             };
 
             XmlSerializer xml = new XmlSerializer(typeof(Withdraw));
@@ -169,12 +172,13 @@ namespace Blackbox.Server
             }
         }
 
-        internal static string SerializeDeposit(int accountId, double amount)
+        internal static string SerializeDeposit(int accountId, double amount, string atmId)
         {
             Deposit accountBalance = new Deposit
             {
                 AccountId = accountId,
-                Amount = amount
+                Amount = amount,
+                AtmId = atmId
             };
 
             XmlSerializer xml = new XmlSerializer(typeof(Deposit));
@@ -215,13 +219,14 @@ namespace Blackbox.Server
             }
         }
 
-        internal static string SerializeTransfer(int accountId, double amount, int accountIdDestiny)
+        internal static string SerializeTransfer(int accountId, double amount, int accountIdDestiny, string atmId)
         {
             Transfer accountInfo = new Transfer
             {
                 AccountId = accountId,
                 Amount = amount,
-                AccountIdDestiny = accountIdDestiny
+                AccountIdDestiny = accountIdDestiny,
+                AtmId = atmId
             };
 
             XmlSerializer xml = new XmlSerializer(typeof(Transfer));

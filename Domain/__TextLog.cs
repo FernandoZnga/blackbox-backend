@@ -18,5 +18,6 @@ namespace Blackbox.Server.Domain
         public string Transaction { get; set; }
         public string Md5IN { get; set; }
         public string Md5OUT { get; set; }
+        public string AtmId { get; set; }
     }
 }
