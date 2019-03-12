@@ -410,6 +410,44 @@ namespace Blackbox.Server.Prop
                         }
                     }
                 }
+                else if (api == "ChangePin")
+                {
+                    logText.Transaction = api;
+                    var change = Serialization.DeserializeChangePin(xmlText);
+                    ChangePin changePin = new ChangePin
+                    {
+                        Account = change.Account,
+                        CurrentPin = change.CurrentPin,
+                        NewPin = change.NewPin,
+                        AtmId = change.AtmId
+                    };
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializeChangePin(changePin.Account, changePin.CurrentPin, changePin.NewPin, changePin.AtmId));
+                    logText.Md5OUT = md5OUT;
+                    Log.Save(logText);
+
+                    if (md5OUT != change.Key)
+                    {
+                        return Serialization.GeneralResponse(601).ToString();
+                    }
+                    else
+                    {
+                        var Account = _context.CreditCards.FirstOrDefault(s => s.AccountId == changePin.Account);
+                        if (Account == null)
+                        {
+                            return Serialization.GeneralResponse(801).ToString();
+                        }
+                        else if (Account.PinNumber != changePin.CurrentPin)
+                        {
+                            return Serialization.GeneralResponse(801).ToString();
+                        }
+                        else
+                        {
+                            Account.PinNumber = changePin.NewPin;
+                            _context.SaveChanges();
+                            return Serialization.SerializeChangePinResponse(Account.AccountId, 200).ToString();
+                        }
+                    }
+                }
                 else
                 {
                     return Serialization.GeneralResponse(501).ToString();
