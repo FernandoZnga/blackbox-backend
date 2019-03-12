@@ -16,7 +16,7 @@ namespace Blackbox.Server.Domain
         public Customer Customer { get; set; }
         public int CustomerId { get; set; }
         public CreditCard CreditCard { get; set; }
-        public CcType CcType { get; set; }
+        public AccountType CcType { get; set; }
         public int CcTypeId { get; set; }
         public double Balance { get; set; }
         public DateTime CreatedAt { get; set; }
