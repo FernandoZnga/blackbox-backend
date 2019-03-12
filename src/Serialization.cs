@@ -3,6 +3,7 @@ using System.IO;
 using Blackbox.Server.Prop;
 using Blackbox.Client.src;
 using System;
+using Blackbox.Server.Domain;
 
 namespace Blackbox.Server
 {
@@ -249,6 +250,52 @@ namespace Blackbox.Server
             };
 
             XmlSerializer xml = new XmlSerializer(typeof(TransferResponse));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, accountInfo);
+                accountInfo.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, accountInfo);
+                return stringWriterNew.ToString();
+            }
+        }
+
+        internal static ChangePin DeserializeChangePin(string xmlText)
+        {
+            XmlSerializer xml = new XmlSerializer(typeof(ChangePin));
+            using (StringReader stringReader = new StringReader(xmlText))
+            {
+                return (ChangePin)xml.Deserialize(stringReader);
+            }
+        }
+
+        internal static string SerializeChangePin(int account, string currentPin, string newPin, string atmId)
+        {
+            ChangePin changePin = new ChangePin
+            {
+                Account = account,
+                CurrentPin = currentPin,
+                NewPin = newPin,
+                AtmId = atmId
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(ChangePin));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, changePin);
+                return stringWriter.ToString();
+            }
+        }
+
+        internal static object SerializeChangePinResponse(int accountId, int response)
+        {
+            ChangePinResponse accountInfo = new ChangePinResponse
+            {
+                AccountId = accountId,
+                Response = response
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(ChangePinResponse));
             using (StringWriter stringWriter = new StringWriter())
             {
                 xml.Serialize(stringWriter, accountInfo);
