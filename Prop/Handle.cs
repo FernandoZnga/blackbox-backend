@@ -448,6 +448,279 @@ namespace Blackbox.Server.Prop
                         }
                     }
                 }
+                else if (api == "PayEnee")
+                {
+                    logText.Transaction = api;
+                    var enee = Serialization.DeserializePayEnee(xmlText);
+                    PayEnee payEnee = new PayEnee
+                    {
+                        AccountId = enee.AccountId,
+                        BillId = enee.BillId,
+                        AtmId = enee.AtmId
+                    };
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializePayEnee(payEnee.AccountId, payEnee.BillId, payEnee.AtmId));
+                    logText.Md5OUT = md5OUT;
+                    Log.Save(logText);
+
+                    if (md5OUT != enee.Key)
+                    {
+                        return Serialization.GeneralResponse(601).ToString();
+                    }
+                    else
+                    {
+                        var Account = _context.Accounts.FirstOrDefault(s => s.Id == enee.AccountId);
+                        var Enee = _context.Enee.FirstOrDefault(s => s.Id == enee.BillId);
+                        if (Account == null)
+                        {
+                            return Serialization.GeneralResponse(901).ToString();
+                        }
+                        else if (Enee == null)
+                        {
+                            return Serialization.GeneralResponse(902).ToString();
+                        }
+                        else
+                        {
+                            if (Enee.BillAmount > Account.Balance && Account.CcTypeId == 2) // Debito y no tengo saldo suficiente
+                            {
+                                return Serialization.GeneralResponse(903).ToString();
+                            }
+                            else if (Enee.Status == 1)
+                            {
+                                return Serialization.GeneralResponse(904).ToString();
+                            }
+                            else if (Enee.BillAmount <= Account.Balance && Account.CcTypeId == 2) // Debito y tengo saldo suficiente
+                            {
+                                Enee.Status = 1;
+                                Enee.AccountId = Account.Id;
+                                Transaction transaction = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance -= Enee.BillAmount,
+                                    Amount = Enee.BillAmount,
+                                    TxTypeId = 5,
+                                    AccountTypeName = "Debit",
+                                    BillingName = "Enee",
+                                    BillingId = Enee.Id,
+                                    AtmId = enee.AtmId
+                                };
+
+                                //Account.Balance -= accountId.Amount;
+                                _context.Transactions.Add(transaction);
+                                _context.SaveChanges();
+
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == enee.AccountId);
+                                return Serialization.SerializePayEneeResponse(Account.Id, Account.Balance, "Debit", 200);
+                            }
+                            else if (Account.CcTypeId == 1) // Credit
+                            {
+                                Enee.Status = 1;
+                                Enee.AccountId = Account.Id;
+                                Transaction transaction = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance += Enee.BillAmount,
+                                    Amount = Enee.BillAmount,
+                                    TxTypeId = 5,
+                                    AccountTypeName = "Credit",
+                                    BillingName = "Enee",
+                                    BillingId = Enee.Id,
+                                    AtmId = enee.AtmId
+                                };
+
+                                //Account.Balance -= accountId.Amount;
+                                _context.Transactions.Add(transaction);
+                                _context.SaveChanges();
+
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == enee.AccountId);
+                                return Serialization.SerializePayEneeResponse(Account.Id, Account.Balance, "Credit", 200);
+                            }
+                        }
+                    }
+                }
+                else if (api == "PayHondutel")
+                {
+                    logText.Transaction = api;
+                    var hondutel = Serialization.DeserializePayHondutel(xmlText);
+                    PayHondutel payHondutel = new PayHondutel
+                    {
+                        AccountId = hondutel.AccountId,
+                        BillId = hondutel.BillId,
+                        AtmId = hondutel.AtmId
+                    };
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializePayHondutel(payHondutel.AccountId, payHondutel.BillId, payHondutel.AtmId));
+                    logText.Md5OUT = md5OUT;
+                    Log.Save(logText);
+
+                    if (md5OUT != hondutel.Key)
+                    {
+                        return Serialization.GeneralResponse(601).ToString();
+                    }
+                    else
+                    {
+                        var Account = _context.Accounts.FirstOrDefault(s => s.Id == hondutel.AccountId);
+                        var Hondutel = _context.Hondutel.FirstOrDefault(s => s.Id == hondutel.BillId);
+                        if (Account == null)
+                        {
+                            return Serialization.GeneralResponse(901).ToString();
+                        }
+                        else if (Hondutel == null)
+                        {
+                            return Serialization.GeneralResponse(902).ToString();
+                        }
+                        else
+                        {
+                            if (Hondutel.BillAmount > Account.Balance && Account.CcTypeId == 2) // Debito y no tengo saldo suficiente
+                            {
+                                return Serialization.GeneralResponse(903).ToString();
+                            }
+                            else if (Hondutel.Status == 1)
+                            {
+                                return Serialization.GeneralResponse(904).ToString();
+                            }
+                            else if (Hondutel.BillAmount <= Account.Balance && Account.CcTypeId == 2) // Debito y tengo saldo suficiente
+                            {
+                                Hondutel.Status = 1;
+                                Hondutel.AccountId = Account.Id;
+                                Transaction transaction = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance -= Hondutel.BillAmount,
+                                    Amount = Hondutel.BillAmount,
+                                    TxTypeId = 5,
+                                    AccountTypeName = "Debit",
+                                    BillingName = "Hondutel",
+                                    BillingId = Hondutel.Id,
+                                    AtmId = hondutel.AtmId
+                                };
+
+                                //Account.Balance -= accountId.Amount;
+                                _context.Transactions.Add(transaction);
+                                _context.SaveChanges();
+
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == hondutel.AccountId);
+                                return Serialization.SerializePayHondutelResponse(Account.Id, Account.Balance, "Debit", 200);
+                            }
+                            else if (Account.CcTypeId == 1) // Credit
+                            {
+                                Hondutel.Status = 1;
+                                Hondutel.AccountId = Account.Id;
+                                Transaction transaction = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance += Hondutel.BillAmount,
+                                    Amount = Hondutel.BillAmount,
+                                    TxTypeId = 5,
+                                    AccountTypeName = "Credit",
+                                    BillingName = "Hondutel",
+                                    BillingId = Hondutel.Id,
+                                    AtmId = hondutel.AtmId
+                                };
+
+                                //Account.Balance -= accountId.Amount;
+                                _context.Transactions.Add(transaction);
+                                _context.SaveChanges();
+
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == hondutel.AccountId);
+                                return Serialization.SerializePayHondutelResponse(Account.Id, Account.Balance, "Credit", 200);
+                            }
+                        }
+                    }
+                }
+                else if (api == "PaySanaa")
+                {
+                    logText.Transaction = api;
+                    var sanaa = Serialization.DeserializePaySanaa(xmlText);
+                    PaySanaa paySanaa = new PaySanaa
+                    {
+                        AccountId = sanaa.AccountId,
+                        BillId = sanaa.BillId,
+                        AtmId = sanaa.AtmId
+                    };
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializePaySanaa(paySanaa.AccountId, paySanaa.BillId, paySanaa.AtmId));
+                    logText.Md5OUT = md5OUT;
+                    Log.Save(logText);
+
+                    if (md5OUT != sanaa.Key)
+                    {
+                        return Serialization.GeneralResponse(601).ToString();
+                    }
+                    else
+                    {
+                        var Account = _context.Accounts.FirstOrDefault(s => s.Id == sanaa.AccountId);
+                        var Sanaa = _context.Sanaa.FirstOrDefault(s => s.Id == sanaa.BillId);
+                        if (Account == null)
+                        {
+                            return Serialization.GeneralResponse(901).ToString();
+                        }
+                        else if (Sanaa == null)
+                        {
+                            return Serialization.GeneralResponse(902).ToString();
+                        }
+                        else
+                        {
+                            if (Sanaa.BillAmount > Account.Balance && Account.CcTypeId == 2) // Debito y no tengo saldo suficiente
+                            {
+                                return Serialization.GeneralResponse(903).ToString();
+                            }
+                            else if (Sanaa.Status == 1)
+                            {
+                                return Serialization.GeneralResponse(904).ToString();
+                            }
+                            else if (Sanaa.BillAmount <= Account.Balance && Account.CcTypeId == 2) // Debito y tengo saldo suficiente
+                            {
+                                Sanaa.Status = 1;
+                                Sanaa.AccountId = Account.Id;
+                                Transaction transaction = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance -= Sanaa.BillAmount,
+                                    Amount = Sanaa.BillAmount,
+                                    TxTypeId = 5,
+                                    AccountTypeName = "Debit",
+                                    BillingName = "Sanaa",
+                                    BillingId = Sanaa.Id,
+                                    AtmId = sanaa.AtmId
+                                };
+
+                                //Account.Balance -= accountId.Amount;
+                                _context.Transactions.Add(transaction);
+                                _context.SaveChanges();
+
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == sanaa.AccountId);
+                                return Serialization.SerializePaySanaaResponse(Account.Id, Account.Balance, "Debit", 200);
+                            }
+                            else if (Account.CcTypeId == 1) // Credit
+                            {
+                                Sanaa.Status = 1;
+                                Sanaa.AccountId = Account.Id;
+                                Transaction transaction = new Transaction()
+                                {
+                                    Account = Account,
+                                    BalanceBefore = Account.Balance,
+                                    BalanceAfter = Account.Balance += Sanaa.BillAmount,
+                                    Amount = Sanaa.BillAmount,
+                                    TxTypeId = 5,
+                                    AccountTypeName = "Credit",
+                                    BillingName = "Sanaa",
+                                    BillingId = Sanaa.Id,
+                                    AtmId = sanaa.AtmId
+                                };
+
+                                //Account.Balance -= accountId.Amount;
+                                _context.Transactions.Add(transaction);
+                                _context.SaveChanges();
+
+                                Account = _context.Accounts.FirstOrDefault(s => s.Id == sanaa.AccountId);
+                                return Serialization.SerializePaySanaaResponse(Account.Id, Account.Balance, "Credit", 200);
+                            }
+                        }
+                    }
+                }
                 else
                 {
                     return Serialization.GeneralResponse(501).ToString();

@@ -7,6 +7,7 @@ namespace Blackbox.Server.Domain
         public Transaction()
         {
             CreatedAt = DateTime.Now;
+            BillingId = 0;
         }
 
         public int Id { get; set; }
@@ -20,5 +21,7 @@ namespace Blackbox.Server.Domain
         public DateTime CreatedAt { get; set; }
         public string AccountTypeName { get; set; }
         public string AtmId { get; set; }
+        public string BillingName { get; set; }
+        public int BillingId { get; set; }
     }
 }

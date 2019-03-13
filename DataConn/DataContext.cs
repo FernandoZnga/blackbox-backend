@@ -8,10 +8,13 @@ namespace Blackbox.Server.DataConn
         public DbSet<__TextLog> __TextLogs { get; set; }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<CreditCard> CreditCards { get; set; }
-        public DbSet<CcType> CcTypes { get; set; }
+        public DbSet<AccountType> AccountTypes { get; set; }
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
         public DbSet<TxType> TxTypes { get; set; }
+        public DbSet<Enee> Enee { get; set; }
+        public DbSet<Sanaa> Sanaa { get; set; }
+        public DbSet<Hondutel> Hondutel { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

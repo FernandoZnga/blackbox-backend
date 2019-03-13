@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Blackbox.Server.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20190303174018_Add-Withdraw-Table-Feature")]
-    partial class AddWithdrawTableFeature
+    [Migration("20190312084457_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -44,7 +44,7 @@ namespace Blackbox.Server.Migrations
                     b.ToTable("Accounts");
                 });
 
-            modelBuilder.Entity("Blackbox.Server.Domain.CcType", b =>
+            modelBuilder.Entity("Blackbox.Server.Domain.AccountType", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -56,7 +56,7 @@ namespace Blackbox.Server.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CcTypes");
+                    b.ToTable("AccountTypes");
                 });
 
             modelBuilder.Entity("Blackbox.Server.Domain.CreditCard", b =>
@@ -100,6 +100,63 @@ namespace Blackbox.Server.Migrations
                     b.ToTable("Customers");
                 });
 
+            modelBuilder.Entity("Blackbox.Server.Domain.Enee", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountId");
+
+                    b.Property<double>("BillAmount");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<int>("Status");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Enee");
+                });
+
+            modelBuilder.Entity("Blackbox.Server.Domain.Hondutel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountId");
+
+                    b.Property<double>("BillAmount");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<int>("Status");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Hondutel");
+                });
+
+            modelBuilder.Entity("Blackbox.Server.Domain.Sanaa", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("AccountId");
+
+                    b.Property<double>("BillAmount");
+
+                    b.Property<DateTime>("CreatedAt");
+
+                    b.Property<int>("Status");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sanaa");
+                });
+
             modelBuilder.Entity("Blackbox.Server.Domain.Transaction", b =>
                 {
                     b.Property<int>("Id")
@@ -108,11 +165,19 @@ namespace Blackbox.Server.Migrations
 
                     b.Property<int>("AccountId");
 
+                    b.Property<string>("AccountTypeName");
+
                     b.Property<double>("Amount");
+
+                    b.Property<string>("AtmId");
 
                     b.Property<double>("BalanceAfter");
 
                     b.Property<double>("BalanceBefore");
+
+                    b.Property<int>("BillingId");
+
+                    b.Property<string>("BillingName");
 
                     b.Property<DateTime>("CreatedAt");
 
@@ -148,6 +213,8 @@ namespace Blackbox.Server.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+                    b.Property<string>("AtmId");
+
                     b.Property<DateTime>("CreatedAt");
 
                     b.Property<string>("DesText");
@@ -169,7 +236,7 @@ namespace Blackbox.Server.Migrations
 
             modelBuilder.Entity("Blackbox.Server.Domain.Account", b =>
                 {
-                    b.HasOne("Blackbox.Server.Domain.CcType", "CcType")
+                    b.HasOne("Blackbox.Server.Domain.AccountType", "CcType")
                         .WithMany("Accounts")
                         .HasForeignKey("CcTypeId")
                         .OnDelete(DeleteBehavior.Cascade);

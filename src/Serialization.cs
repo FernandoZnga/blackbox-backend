@@ -305,5 +305,146 @@ namespace Blackbox.Server
                 return stringWriterNew.ToString();
             }
         }
+
+        internal static PayEnee DeserializePayEnee(string xmlText)
+        {
+            XmlSerializer xml = new XmlSerializer(typeof(PayEnee));
+            using (StringReader stringReader = new StringReader(xmlText))
+            {
+                return (PayEnee)xml.Deserialize(stringReader);
+            }
+        }
+
+        internal static string SerializePayEnee(int accountId, int billId, string atmId)
+        {
+            PayEnee payment = new PayEnee
+            {
+                AccountId = accountId,
+                BillId = billId,
+                AtmId = atmId
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(PayEnee));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, payment);
+                return stringWriter.ToString();
+            }
+        }
+
+        internal static string SerializePayEneeResponse(int accountId, double newBalance, string accountTypeName, int response)
+        {
+            PayEneeResponse accountInfo = new PayEneeResponse
+            {
+                AccountId = accountId,
+                NewBalance = newBalance,
+                AccountTypeName = accountTypeName,
+                Response = response
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(PayEneeResponse));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, accountInfo);
+                accountInfo.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, accountInfo);
+                return stringWriterNew.ToString();
+            }
+        }
+
+        internal static PayHondutel DeserializePayHondutel(string xmlText)
+        {
+            XmlSerializer xml = new XmlSerializer(typeof(PayHondutel));
+            using (StringReader stringReader = new StringReader(xmlText))
+            {
+                return (PayHondutel)xml.Deserialize(stringReader);
+            }
+        }
+
+        internal static string SerializePayHondutel(int accountId, int billId, string atmId)
+        {
+            PayHondutel payment = new PayHondutel
+            {
+                AccountId = accountId,
+                BillId = billId,
+                AtmId = atmId
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(PayHondutel));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, payment);
+                return stringWriter.ToString();
+            }
+        }
+
+        internal static string SerializePayHondutelResponse(int accountId, double newBalance, string accountTypeName, int response)
+        {
+            PayHondutelResponse accountInfo = new PayHondutelResponse
+            {
+                AccountId = accountId,
+                NewBalance = newBalance,
+                AccountTypeName = accountTypeName,
+                Response = response
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(PayHondutelResponse));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, accountInfo);
+                accountInfo.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, accountInfo);
+                return stringWriterNew.ToString();
+            }
+        }
+
+        internal static PaySanaa DeserializePaySanaa(string xmlText)
+        {
+            XmlSerializer xml = new XmlSerializer(typeof(PaySanaa));
+            using (StringReader stringReader = new StringReader(xmlText))
+            {
+                return (PaySanaa)xml.Deserialize(stringReader);
+            }
+        }
+
+        internal static string SerializePaySanaa(int accountId, int billId, string atmId)
+        {
+            PaySanaa payment = new PaySanaa
+            {
+                AccountId = accountId,
+                BillId = billId,
+                AtmId = atmId
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(PaySanaa));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, payment);
+                return stringWriter.ToString();
+            }
+        }
+
+        internal static string SerializePaySanaaResponse(int accountId, double newBalance, string accountTypeName, int response)
+        {
+            PaySanaaResponse accountInfo = new PaySanaaResponse
+            {
+                AccountId = accountId,
+                NewBalance = newBalance,
+                AccountTypeName = accountTypeName,
+                Response = response
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(PaySanaaResponse));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, accountInfo);
+                accountInfo.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, accountInfo);
+                return stringWriterNew.ToString();
+            }
+        }
     }
 }
