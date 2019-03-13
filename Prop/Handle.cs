@@ -484,6 +484,10 @@ namespace Blackbox.Server.Prop
                             {
                                 return Serialization.GeneralResponse(903).ToString();
                             }
+                            else if (Enee.Status == 1)
+                            {
+                                return Serialization.GeneralResponse(904).ToString();
+                            }
                             else if (Enee.BillAmount <= Account.Balance && Account.CcTypeId == 2) // Debito y tengo saldo suficiente
                             {
                                 Enee.Status = 1;
@@ -571,6 +575,10 @@ namespace Blackbox.Server.Prop
                             {
                                 return Serialization.GeneralResponse(903).ToString();
                             }
+                            else if (Hondutel.Status == 1)
+                            {
+                                return Serialization.GeneralResponse(904).ToString();
+                            }
                             else if (Hondutel.BillAmount <= Account.Balance && Account.CcTypeId == 2) // Debito y tengo saldo suficiente
                             {
                                 Hondutel.Status = 1;
@@ -657,6 +665,10 @@ namespace Blackbox.Server.Prop
                             if (Sanaa.BillAmount > Account.Balance && Account.CcTypeId == 2) // Debito y no tengo saldo suficiente
                             {
                                 return Serialization.GeneralResponse(903).ToString();
+                            }
+                            else if (Sanaa.Status == 1)
+                            {
+                                return Serialization.GeneralResponse(904).ToString();
                             }
                             else if (Sanaa.BillAmount <= Account.Balance && Account.CcTypeId == 2) // Debito y tengo saldo suficiente
                             {
