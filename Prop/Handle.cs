@@ -57,6 +57,8 @@ namespace Blackbox.Server.Prop
                             }
                             else
                             {
+                                var customer = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                                Mail.CcPinNumber(customer);
                                 return Serialization.SerializeCcPinNumberResponse(account.Id, 200).ToString();
                             }
                         }
@@ -112,20 +114,20 @@ namespace Blackbox.Server.Prop
                     }
                     else
                     {
-                        var Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
-                        if (Account == null)
+                        var account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                        if (account == null)
                         {
                             return Serialization.GeneralResponse(501).ToString();
                         }
                         else
                         {
-                            if (Account.CcTypeId == 1) // Credit
+                            if (account.CcTypeId == 1) // Credit
                             {
                                 Transaction transaction = new Transaction()
                                 {
-                                    Account = Account,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance += accountId.Amount,
+                                    Account = account,
+                                    BalanceBefore = account.Balance,
+                                    BalanceAfter = account.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 1,
                                     AccountTypeName = "Credit",
@@ -135,19 +137,21 @@ namespace Blackbox.Server.Prop
                                 //Account.Balance += accountId.Amount;
                                 _context.Transactions.Add(transaction);
                                 _context.SaveChanges();
-                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
 
-                                return Serialization.SerializeWithdrawResponse(Account.Id, Account.Balance, "Credit", 200);
+                                account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                Customer customer = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                                Mail.Withdraw(customer, transaction);
+                                return Serialization.SerializeWithdrawResponse(account.Id, account.Balance, "Credit", 200);
                             }
-                            else if (Account.CcTypeId == 2) // Debit
+                            else if (account.CcTypeId == 2) // Debit
                             {
-                                if (Account.Balance >= accountId.Amount)
+                                if (account.Balance >= accountId.Amount)
                                 {
                                     Transaction transaction = new Transaction()
                                     {
-                                        Account = Account,
-                                        BalanceBefore = Account.Balance,
-                                        BalanceAfter = Account.Balance -= accountId.Amount,
+                                        Account = account,
+                                        BalanceBefore = account.Balance,
+                                        BalanceAfter = account.Balance -= accountId.Amount,
                                         Amount = accountId.Amount,
                                         TxTypeId = 1,
                                         AccountTypeName = "Debit",
@@ -158,8 +162,10 @@ namespace Blackbox.Server.Prop
                                     _context.Transactions.Add(transaction);
                                     _context.SaveChanges();
 
-                                    Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
-                                    return Serialization.SerializeWithdrawResponse(Account.Id, Account.Balance, "Debit", 200);
+                                    account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                    Customer customer = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                                    Mail.Withdraw(customer, transaction);
+                                    return Serialization.SerializeWithdrawResponse(account.Id, account.Balance, "Debit", 200);
                                 }
                                 else
                                 {
@@ -192,20 +198,20 @@ namespace Blackbox.Server.Prop
                     }
                     else
                     {
-                        var Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
-                        if (Account == null)
+                        var account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                        if (account == null)
                         {
                             return Serialization.GeneralResponse(501).ToString();
                         }
                         else
                         {
-                            if (Account.CcTypeId == 1) // Credit
+                            if (account.CcTypeId == 1) // Credit
                             {
                                 Transaction transaction = new Transaction()
                                 {
-                                    Account = Account,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance -= accountId.Amount,
+                                    Account = account,
+                                    BalanceBefore = account.Balance,
+                                    BalanceAfter = account.Balance -= accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 2,
                                     AccountTypeName = "Credit",
@@ -215,17 +221,19 @@ namespace Blackbox.Server.Prop
                                 //Account.Balance += accountId.Amount;
                                 _context.Transactions.Add(transaction);
                                 _context.SaveChanges();
-                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
 
-                                return Serialization.SerializeDepositResponse(Account.Id, Account.Balance, "Credit", 200);
+                                account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                Customer customer = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                                Mail.Deposit(customer, transaction);
+                                return Serialization.SerializeDepositResponse(account.Id, account.Balance, "Credit", 200);
                             }
-                            else if (Account.CcTypeId == 2) // Debit
+                            else if (account.CcTypeId == 2) // Debit
                             {
                                 Transaction transaction = new Transaction()
                                 {
-                                    Account = Account,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance += accountId.Amount,
+                                    Account = account,
+                                    BalanceBefore = account.Balance,
+                                    BalanceAfter = account.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 2,
                                     AccountTypeName = "Debit",
@@ -236,8 +244,10 @@ namespace Blackbox.Server.Prop
                                 _context.Transactions.Add(transaction);
                                 _context.SaveChanges();
 
-                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
-                                return Serialization.SerializeDepositResponse(Account.Id, Account.Balance, "Debit", 200);
+                                account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                Customer customer = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                                Mail.Deposit(customer, transaction);
+                                return Serialization.SerializeDepositResponse(account.Id, account.Balance, "Debit", 200);
                             }
                             else
                             {
@@ -266,21 +276,21 @@ namespace Blackbox.Server.Prop
                     }
                     else
                     {
-                        var Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
-                        var AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
-                        if (Account == null || AccountDestiny == null)
+                        var account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                        var accountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
+                        if (account == null || accountDestiny == null)
                         {
                             return Serialization.GeneralResponse(501).ToString();
                         }
                         else
                         {
-                            if (Account.CcTypeId == 1 && AccountDestiny.CcTypeId == 1) // Credit // Credit
+                            if (account.CcTypeId == 1 && accountDestiny.CcTypeId == 1) // Credit // Credit
                             {
                                 Transaction transaction1 = new Transaction()
                                 {
-                                    Account = Account,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance += accountId.Amount,
+                                    Account = account,
+                                    BalanceBefore = account.Balance,
+                                    BalanceAfter = account.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 4,
                                     AccountTypeName = "Credit",
@@ -288,9 +298,9 @@ namespace Blackbox.Server.Prop
                                 };
                                 Transaction transaction2 = new Transaction()
                                 {
-                                    Account = AccountDestiny,
-                                    BalanceBefore = AccountDestiny.Balance,
-                                    BalanceAfter = AccountDestiny.Balance -= accountId.Amount,
+                                    Account = accountDestiny,
+                                    BalanceBefore = accountDestiny.Balance,
+                                    BalanceAfter = accountDestiny.Balance -= accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 3,
                                     AccountTypeName = "Credit",
@@ -301,18 +311,22 @@ namespace Blackbox.Server.Prop
                                 _context.Transactions.Add(transaction1);
                                 _context.Transactions.Add(transaction2);
                                 _context.SaveChanges();
-                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
-                                AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
 
-                                return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Credit", AccountDestiny.Id, 200);
+                                account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                accountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
+                                Customer customer1 = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                                Customer customer2 = _context.Customers.FirstOrDefault(s => s.Id == accountDestiny.CustomerId);
+                                Mail.TransferOut(customer1, transaction1);
+                                Mail.TransferIn(customer2, transaction2);
+                                return Serialization.SerializeTransferResponse(account.Id, account.Balance, "Credit", accountDestiny.Id, 200);
                             }
-                            else if (Account.CcTypeId == 1 && AccountDestiny.CcTypeId == 2) // Credit // Debit
+                            else if (account.CcTypeId == 1 && accountDestiny.CcTypeId == 2) // Credit // Debit
                             {
                                 Transaction transaction1 = new Transaction()
                                 {
-                                    Account = Account,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance += accountId.Amount,
+                                    Account = account,
+                                    BalanceBefore = account.Balance,
+                                    BalanceAfter = account.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 4,
                                     AccountTypeName = "Credit",
@@ -320,9 +334,9 @@ namespace Blackbox.Server.Prop
                                 };
                                 Transaction transaction2 = new Transaction()
                                 {
-                                    Account = AccountDestiny,
-                                    BalanceBefore = AccountDestiny.Balance,
-                                    BalanceAfter = AccountDestiny.Balance += accountId.Amount,
+                                    Account = accountDestiny,
+                                    BalanceBefore = accountDestiny.Balance,
+                                    BalanceAfter = accountDestiny.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 3,
                                     AccountTypeName = "Debit",
@@ -333,19 +347,22 @@ namespace Blackbox.Server.Prop
                                 _context.Transactions.Add(transaction1);
                                 _context.Transactions.Add(transaction2);
                                 _context.SaveChanges();
-                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
-                                AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
-
-                                return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Credit", AccountDestiny.Id, 200);
+                                account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                accountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
+                                Customer customer1 = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                                Customer customer2 = _context.Customers.FirstOrDefault(s => s.Id == accountDestiny.CustomerId);
+                                Mail.TransferOut(customer1, transaction1);
+                                Mail.TransferIn(customer2, transaction2);
+                                return Serialization.SerializeTransferResponse(account.Id, account.Balance, "Credit", accountDestiny.Id, 200);
                             }
                             //------
-                            if (Account.CcTypeId == 2 && AccountDestiny.CcTypeId == 2 && Account.Balance >= accountId.Amount) // Debit // Debit
+                            if (account.CcTypeId == 2 && accountDestiny.CcTypeId == 2 && account.Balance >= accountId.Amount) // Debit // Debit
                             {
                                 Transaction transaction1 = new Transaction()
                                 {
-                                    Account = Account,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance -= accountId.Amount,
+                                    Account = account,
+                                    BalanceBefore = account.Balance,
+                                    BalanceAfter = account.Balance -= accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 4,
                                     AccountTypeName = "Debit",
@@ -353,9 +370,9 @@ namespace Blackbox.Server.Prop
                                 };
                                 Transaction transaction2 = new Transaction()
                                 {
-                                    Account = AccountDestiny,
-                                    BalanceBefore = AccountDestiny.Balance,
-                                    BalanceAfter = AccountDestiny.Balance += accountId.Amount,
+                                    Account = accountDestiny,
+                                    BalanceBefore = accountDestiny.Balance,
+                                    BalanceAfter = accountDestiny.Balance += accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 3,
                                     AccountTypeName = "Debit",
@@ -366,18 +383,21 @@ namespace Blackbox.Server.Prop
                                 _context.Transactions.Add(transaction1);
                                 _context.Transactions.Add(transaction2);
                                 _context.SaveChanges();
-                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
-                                AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
-
-                                return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Debit", AccountDestiny.Id, 200);
+                                account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                accountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
+                                Customer customer1 = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                                Customer customer2 = _context.Customers.FirstOrDefault(s => s.Id == accountDestiny.CustomerId);
+                                Mail.TransferOut(customer1, transaction1);
+                                Mail.TransferIn(customer2, transaction2);
+                                return Serialization.SerializeTransferResponse(account.Id, account.Balance, "Debit", accountDestiny.Id, 200);
                             }
-                            else if (Account.CcTypeId == 2 && AccountDestiny.CcTypeId == 1 && Account.Balance >= accountId.Amount) // Debit // Credit
+                            else if (account.CcTypeId == 2 && accountDestiny.CcTypeId == 1 && account.Balance >= accountId.Amount) // Debit // Credit
                             {
                                 Transaction transaction1 = new Transaction()
                                 {
-                                    Account = Account,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance -= accountId.Amount,
+                                    Account = account,
+                                    BalanceBefore = account.Balance,
+                                    BalanceAfter = account.Balance -= accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 4,
                                     AccountTypeName = "Debit",
@@ -385,9 +405,9 @@ namespace Blackbox.Server.Prop
                                 };
                                 Transaction transaction2 = new Transaction()
                                 {
-                                    Account = AccountDestiny,
-                                    BalanceBefore = AccountDestiny.Balance,
-                                    BalanceAfter = AccountDestiny.Balance -= accountId.Amount,
+                                    Account = accountDestiny,
+                                    BalanceBefore = accountDestiny.Balance,
+                                    BalanceAfter = accountDestiny.Balance -= accountId.Amount,
                                     Amount = accountId.Amount,
                                     TxTypeId = 3,
                                     AccountTypeName = "Credit",
@@ -398,10 +418,13 @@ namespace Blackbox.Server.Prop
                                 _context.Transactions.Add(transaction1);
                                 _context.Transactions.Add(transaction2);
                                 _context.SaveChanges();
-                                Account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
-                                AccountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
-
-                                return Serialization.SerializeTransferResponse(Account.Id, Account.Balance, "Debit", AccountDestiny.Id, 200);
+                                account = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountId);
+                                accountDestiny = _context.Accounts.FirstOrDefault(s => s.Id == accountId.AccountIdDestiny);
+                                Customer customer1 = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                                Customer customer2 = _context.Customers.FirstOrDefault(s => s.Id == accountDestiny.CustomerId);
+                                Mail.TransferOut(customer1, transaction1);
+                                Mail.TransferIn(customer2, transaction2);
+                                return Serialization.SerializeTransferResponse(account.Id, account.Balance, "Debit", accountDestiny.Id, 200);
                             }
                             else
                             {
@@ -413,7 +436,7 @@ namespace Blackbox.Server.Prop
                 else if (api == "ChangePin")
                 {
                     logText.Transaction = api;
-                    var change = Serialization.DeserializeChangePin(xmlText);
+                    ChangePin change = Serialization.DeserializeChangePin(xmlText);
                     ChangePin changePin = new ChangePin
                     {
                         Account = change.Account,
@@ -431,20 +454,24 @@ namespace Blackbox.Server.Prop
                     }
                     else
                     {
-                        var Account = _context.CreditCards.FirstOrDefault(s => s.AccountId == changePin.Account);
-                        if (Account == null)
+                        var creditCard = _context.CreditCards.FirstOrDefault(s => s.AccountId == changePin.Account);
+                        if (creditCard == null)
                         {
                             return Serialization.GeneralResponse(801).ToString();
                         }
-                        else if (Account.PinNumber != changePin.CurrentPin)
+                        else if (creditCard.PinNumber != changePin.CurrentPin)
                         {
                             return Serialization.GeneralResponse(801).ToString();
                         }
                         else
                         {
-                            Account.PinNumber = changePin.NewPin;
+                            creditCard.PinNumber = changePin.NewPin;
                             _context.SaveChanges();
-                            return Serialization.SerializeChangePinResponse(Account.AccountId, 200).ToString();
+
+                            Account account = _context.Accounts.FirstOrDefault(s => s.Id == creditCard.AccountId);
+                            Customer customer = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                            Mail.ChangePin(customer);
+                            return Serialization.SerializeChangePinResponse(creditCard.AccountId, 200).ToString();
                         }
                     }
                 }
@@ -468,9 +495,9 @@ namespace Blackbox.Server.Prop
                     }
                     else
                     {
-                        var Account = _context.Accounts.FirstOrDefault(s => s.Id == enee.AccountId);
+                        Account account = _context.Accounts.FirstOrDefault(s => s.Id == enee.AccountId);
                         var Enee = _context.Enee.FirstOrDefault(s => s.Id == enee.BillId);
-                        if (Account == null)
+                        if (account == null)
                         {
                             return Serialization.GeneralResponse(901).ToString();
                         }
@@ -480,7 +507,7 @@ namespace Blackbox.Server.Prop
                         }
                         else
                         {
-                            if (Enee.BillAmount > Account.Balance && Account.CcTypeId == 2) // Debito y no tengo saldo suficiente
+                            if (Enee.BillAmount > account.Balance && account.CcTypeId == 2) // Debito y no tengo saldo suficiente
                             {
                                 return Serialization.GeneralResponse(903).ToString();
                             }
@@ -488,15 +515,15 @@ namespace Blackbox.Server.Prop
                             {
                                 return Serialization.GeneralResponse(904).ToString();
                             }
-                            else if (Enee.BillAmount <= Account.Balance && Account.CcTypeId == 2) // Debito y tengo saldo suficiente
+                            else if (Enee.BillAmount <= account.Balance && account.CcTypeId == 2) // Debito y tengo saldo suficiente
                             {
                                 Enee.Status = 1;
-                                Enee.AccountId = Account.Id;
+                                Enee.AccountId = account.Id;
                                 Transaction transaction = new Transaction()
                                 {
-                                    Account = Account,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance -= Enee.BillAmount,
+                                    Account = account,
+                                    BalanceBefore = account.Balance,
+                                    BalanceAfter = account.Balance -= Enee.BillAmount,
                                     Amount = Enee.BillAmount,
                                     TxTypeId = 5,
                                     AccountTypeName = "Debit",
@@ -508,19 +535,20 @@ namespace Blackbox.Server.Prop
                                 //Account.Balance -= accountId.Amount;
                                 _context.Transactions.Add(transaction);
                                 _context.SaveChanges();
-
-                                Account = _context.Accounts.FirstOrDefault(s => s.Id == enee.AccountId);
-                                return Serialization.SerializePayEneeResponse(Account.Id, Account.Balance, "Debit", 200);
+                                account = _context.Accounts.FirstOrDefault(s => s.Id == enee.AccountId);
+                                Customer customer = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                                Mail.PayService(customer, transaction);
+                                return Serialization.SerializePayEneeResponse(account.Id, account.Balance, "Debit", 200);
                             }
-                            else if (Account.CcTypeId == 1) // Credit
+                            else if (account.CcTypeId == 1) // Credit
                             {
                                 Enee.Status = 1;
-                                Enee.AccountId = Account.Id;
+                                Enee.AccountId = account.Id;
                                 Transaction transaction = new Transaction()
                                 {
-                                    Account = Account,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance += Enee.BillAmount,
+                                    Account = account,
+                                    BalanceBefore = account.Balance,
+                                    BalanceAfter = account.Balance += Enee.BillAmount,
                                     Amount = Enee.BillAmount,
                                     TxTypeId = 5,
                                     AccountTypeName = "Credit",
@@ -533,8 +561,10 @@ namespace Blackbox.Server.Prop
                                 _context.Transactions.Add(transaction);
                                 _context.SaveChanges();
 
-                                Account = _context.Accounts.FirstOrDefault(s => s.Id == enee.AccountId);
-                                return Serialization.SerializePayEneeResponse(Account.Id, Account.Balance, "Credit", 200);
+                                account = _context.Accounts.FirstOrDefault(s => s.Id == enee.AccountId);
+                                Customer customer = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                                Mail.PayService(customer, transaction);
+                                return Serialization.SerializePayEneeResponse(account.Id, account.Balance, "Credit", 200);
                             }
                         }
                     }
@@ -559,9 +589,9 @@ namespace Blackbox.Server.Prop
                     }
                     else
                     {
-                        var Account = _context.Accounts.FirstOrDefault(s => s.Id == hondutel.AccountId);
+                        Account account = _context.Accounts.FirstOrDefault(s => s.Id == hondutel.AccountId);
                         var Hondutel = _context.Hondutel.FirstOrDefault(s => s.Id == hondutel.BillId);
-                        if (Account == null)
+                        if (account == null)
                         {
                             return Serialization.GeneralResponse(901).ToString();
                         }
@@ -571,7 +601,7 @@ namespace Blackbox.Server.Prop
                         }
                         else
                         {
-                            if (Hondutel.BillAmount > Account.Balance && Account.CcTypeId == 2) // Debito y no tengo saldo suficiente
+                            if (Hondutel.BillAmount > account.Balance && account.CcTypeId == 2) // Debito y no tengo saldo suficiente
                             {
                                 return Serialization.GeneralResponse(903).ToString();
                             }
@@ -579,15 +609,15 @@ namespace Blackbox.Server.Prop
                             {
                                 return Serialization.GeneralResponse(904).ToString();
                             }
-                            else if (Hondutel.BillAmount <= Account.Balance && Account.CcTypeId == 2) // Debito y tengo saldo suficiente
+                            else if (Hondutel.BillAmount <= account.Balance && account.CcTypeId == 2) // Debito y tengo saldo suficiente
                             {
                                 Hondutel.Status = 1;
-                                Hondutel.AccountId = Account.Id;
+                                Hondutel.AccountId = account.Id;
                                 Transaction transaction = new Transaction()
                                 {
-                                    Account = Account,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance -= Hondutel.BillAmount,
+                                    Account = account,
+                                    BalanceBefore = account.Balance,
+                                    BalanceAfter = account.Balance -= Hondutel.BillAmount,
                                     Amount = Hondutel.BillAmount,
                                     TxTypeId = 5,
                                     AccountTypeName = "Debit",
@@ -600,18 +630,20 @@ namespace Blackbox.Server.Prop
                                 _context.Transactions.Add(transaction);
                                 _context.SaveChanges();
 
-                                Account = _context.Accounts.FirstOrDefault(s => s.Id == hondutel.AccountId);
-                                return Serialization.SerializePayHondutelResponse(Account.Id, Account.Balance, "Debit", 200);
+                                account = _context.Accounts.FirstOrDefault(s => s.Id == hondutel.AccountId);
+                                Customer customer = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                                Mail.PayService(customer, transaction);
+                                return Serialization.SerializePayHondutelResponse(account.Id, account.Balance, "Debit", 200);
                             }
-                            else if (Account.CcTypeId == 1) // Credit
+                            else if (account.CcTypeId == 1) // Credit
                             {
                                 Hondutel.Status = 1;
-                                Hondutel.AccountId = Account.Id;
+                                Hondutel.AccountId = account.Id;
                                 Transaction transaction = new Transaction()
                                 {
-                                    Account = Account,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance += Hondutel.BillAmount,
+                                    Account = account,
+                                    BalanceBefore = account.Balance,
+                                    BalanceAfter = account.Balance += Hondutel.BillAmount,
                                     Amount = Hondutel.BillAmount,
                                     TxTypeId = 5,
                                     AccountTypeName = "Credit",
@@ -624,8 +656,10 @@ namespace Blackbox.Server.Prop
                                 _context.Transactions.Add(transaction);
                                 _context.SaveChanges();
 
-                                Account = _context.Accounts.FirstOrDefault(s => s.Id == hondutel.AccountId);
-                                return Serialization.SerializePayHondutelResponse(Account.Id, Account.Balance, "Credit", 200);
+                                account = _context.Accounts.FirstOrDefault(s => s.Id == hondutel.AccountId);
+                                Customer customer = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                                Mail.PayService(customer, transaction);
+                                return Serialization.SerializePayHondutelResponse(account.Id, account.Balance, "Credit", 200);
                             }
                         }
                     }
@@ -650,9 +684,9 @@ namespace Blackbox.Server.Prop
                     }
                     else
                     {
-                        var Account = _context.Accounts.FirstOrDefault(s => s.Id == sanaa.AccountId);
+                        Account account = _context.Accounts.FirstOrDefault(s => s.Id == sanaa.AccountId);
                         var Sanaa = _context.Sanaa.FirstOrDefault(s => s.Id == sanaa.BillId);
-                        if (Account == null)
+                        if (account == null)
                         {
                             return Serialization.GeneralResponse(901).ToString();
                         }
@@ -662,7 +696,7 @@ namespace Blackbox.Server.Prop
                         }
                         else
                         {
-                            if (Sanaa.BillAmount > Account.Balance && Account.CcTypeId == 2) // Debito y no tengo saldo suficiente
+                            if (Sanaa.BillAmount > account.Balance && account.CcTypeId == 2) // Debito y no tengo saldo suficiente
                             {
                                 return Serialization.GeneralResponse(903).ToString();
                             }
@@ -670,15 +704,15 @@ namespace Blackbox.Server.Prop
                             {
                                 return Serialization.GeneralResponse(904).ToString();
                             }
-                            else if (Sanaa.BillAmount <= Account.Balance && Account.CcTypeId == 2) // Debito y tengo saldo suficiente
+                            else if (Sanaa.BillAmount <= account.Balance && account.CcTypeId == 2) // Debito y tengo saldo suficiente
                             {
                                 Sanaa.Status = 1;
-                                Sanaa.AccountId = Account.Id;
+                                Sanaa.AccountId = account.Id;
                                 Transaction transaction = new Transaction()
                                 {
-                                    Account = Account,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance -= Sanaa.BillAmount,
+                                    Account = account,
+                                    BalanceBefore = account.Balance,
+                                    BalanceAfter = account.Balance -= Sanaa.BillAmount,
                                     Amount = Sanaa.BillAmount,
                                     TxTypeId = 5,
                                     AccountTypeName = "Debit",
@@ -691,18 +725,20 @@ namespace Blackbox.Server.Prop
                                 _context.Transactions.Add(transaction);
                                 _context.SaveChanges();
 
-                                Account = _context.Accounts.FirstOrDefault(s => s.Id == sanaa.AccountId);
-                                return Serialization.SerializePaySanaaResponse(Account.Id, Account.Balance, "Debit", 200);
+                                account = _context.Accounts.FirstOrDefault(s => s.Id == sanaa.AccountId);
+                                Customer customer = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                                Mail.PayService(customer, transaction);
+                                return Serialization.SerializePaySanaaResponse(account.Id, account.Balance, "Debit", 200);
                             }
-                            else if (Account.CcTypeId == 1) // Credit
+                            else if (account.CcTypeId == 1) // Credit
                             {
                                 Sanaa.Status = 1;
-                                Sanaa.AccountId = Account.Id;
+                                Sanaa.AccountId = account.Id;
                                 Transaction transaction = new Transaction()
                                 {
-                                    Account = Account,
-                                    BalanceBefore = Account.Balance,
-                                    BalanceAfter = Account.Balance += Sanaa.BillAmount,
+                                    Account = account,
+                                    BalanceBefore = account.Balance,
+                                    BalanceAfter = account.Balance += Sanaa.BillAmount,
                                     Amount = Sanaa.BillAmount,
                                     TxTypeId = 5,
                                     AccountTypeName = "Credit",
@@ -715,8 +751,10 @@ namespace Blackbox.Server.Prop
                                 _context.Transactions.Add(transaction);
                                 _context.SaveChanges();
 
-                                Account = _context.Accounts.FirstOrDefault(s => s.Id == sanaa.AccountId);
-                                return Serialization.SerializePaySanaaResponse(Account.Id, Account.Balance, "Credit", 200);
+                                account = _context.Accounts.FirstOrDefault(s => s.Id == sanaa.AccountId);
+                                Customer customer = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                                Mail.PayService(customer, transaction);
+                                return Serialization.SerializePaySanaaResponse(account.Id, account.Balance, "Credit", 200);
                             }
                         }
                     }

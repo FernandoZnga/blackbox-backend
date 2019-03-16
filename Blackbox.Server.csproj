@@ -231,6 +231,10 @@
     <Compile Include="Migrations\20190312084457_init.designer.cs">
       <DependentUpon>20190312084457_init.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20190316061319_NewField-Email-On-Customers.cs" />
+    <Compile Include="Migrations\20190316061319_NewField-Email-On-Customers.designer.cs">
+      <DependentUpon>20190316061319_NewField-Email-On-Customers.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DataContextModelSnapshot.cs" />
     <Compile Include="Prop\AccountBalance.cs" />
     <Compile Include="Prop\AccountBalanceResponse.cs" />
@@ -255,7 +259,7 @@
     <Compile Include="Prop\WithdrawResponse.cs" />
     <Compile Include="src\Encryption.cs" />
     <Compile Include="src\GenerateKey.cs" />
-    <Compile Include="src\SendMail.cs" />
+    <Compile Include="src\Mail.cs" />
     <Compile Include="src\Serialization.cs" />
     <Compile Include="src\SocketConn.cs" />
     <Compile Include="Main.cs">
