@@ -1,5 +1,6 @@
 ﻿using Blackbox.Server.DataConn;
 using Blackbox.Server.Domain;
+using Blackbox.Server.src;
 using System;
 
 namespace Blackbox.Server
@@ -233,23 +234,23 @@ namespace Blackbox.Server
             /// Credit Cards
             var creditCard1 = new CreditCard()
             {
-                CcNumber = "1111-1111-1111-1111",
-                PinNumber = "1111"
+                CcNumber = GenerateKey.MD5("1111-1111-1111-1111"),
+                PinNumber = GenerateKey.MD5("1111")
             };
             var creditCard2 = new CreditCard()
             {
-                CcNumber = "2222-2222-2222-2222",
-                PinNumber = "2222"
+                CcNumber = GenerateKey.MD5("2222-2222-2222-2222"),
+                PinNumber = GenerateKey.MD5("2222")
             };
             var creditCard3 = new CreditCard()
             {
-                CcNumber = "3333-3333-3333-3333",
-                PinNumber = "3333"
+                CcNumber = GenerateKey.MD5("3333-3333-3333-3333"),
+                PinNumber = GenerateKey.MD5("3333")
             };
             var creditCard4 = new CreditCard()
             {
-                CcNumber = "4444-4444-4444-4444",
-                PinNumber = "4444"
+                CcNumber = GenerateKey.MD5("4444-4444-4444-4444"),
+                PinNumber = GenerateKey.MD5("4444")
             };
 
             /// A couple of accounts
