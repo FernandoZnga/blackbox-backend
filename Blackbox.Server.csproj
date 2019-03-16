@@ -247,6 +247,8 @@
     <Compile Include="Prop\GeneralResponse.cs" />
     <Compile Include="Prop\Handle.cs" />
     <Compile Include="Prop\Log.cs" />
+    <Compile Include="Prop\MyTransactions.cs" />
+    <Compile Include="Prop\MyTransactionsResponse.cs" />
     <Compile Include="Prop\PayEnee.cs" />
     <Compile Include="Prop\PayEneeResponse.cs" />
     <Compile Include="Prop\PayHondutel.cs" />

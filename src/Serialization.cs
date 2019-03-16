@@ -1,6 +1,7 @@
 using System.Xml.Serialization;
 using System.IO;
 using Blackbox.Server.Prop;
+using System;
 
 namespace Blackbox.Server.src
 {
@@ -440,6 +441,50 @@ namespace Blackbox.Server.src
                 accountInfo.Key = GenerateKey.MD5(stringWriter.ToString());
                 StringWriter stringWriterNew = new StringWriter();
                 xml.Serialize(stringWriterNew, accountInfo);
+                return stringWriterNew.ToString();
+            }
+        }
+
+        internal static MyTransactions DeserializeMyTransactions(string xmlText)
+        {
+            XmlSerializer xml = new XmlSerializer(typeof(MyTransactions));
+            using (StringReader stringReader = new StringReader(xmlText))
+            {
+                return (MyTransactions)xml.Deserialize(stringReader);
+            }
+        }
+
+        internal static string SerializeMyTransactions(int accountId, string atmId)
+        {
+            MyTransactions transactions = new MyTransactions
+            {
+                AccountId = accountId,
+                AtmId = atmId
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(MyTransactions));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, transactions);
+                return stringWriter.ToString();
+            }
+        }
+
+        internal static object SerializeMyTransactionsResponse(int accountId, int response)
+        {
+            MyTransactionsResponse transactions = new MyTransactionsResponse
+            {
+                AccountId = accountId,
+                Response = response
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(MyTransactionsResponse));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, transactions);
+                transactions.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, transactions);
                 return stringWriterNew.ToString();
             }
         }

@@ -3,6 +3,7 @@ using Blackbox.Server.DataConn;
 using Blackbox.Server.Domain;
 using System.Linq;
 using System.Xml.Linq;
+using System.Collections.Generic;
 
 namespace Blackbox.Server.Prop
 {
@@ -755,6 +756,48 @@ namespace Blackbox.Server.Prop
                                 Customer customer = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
                                 Mail.PayService(customer, transaction);
                                 return Serialization.SerializePaySanaaResponse(account.Id, account.Balance, "Credit", 200);
+                            }
+                        }
+                    }
+                }
+                else if (api == "MyTransactions")
+                {
+                    logText.Transaction = api;
+                    MyTransactions myTransactions = Serialization.DeserializeMyTransactions(xmlText);
+                    MyTransactions transactions = new MyTransactions
+                    {
+                        AccountId = myTransactions.AccountId,
+                        AtmId = myTransactions.AtmId
+                    };
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializeMyTransactions(transactions.AccountId, transactions.AtmId));
+                    logText.Md5OUT = md5OUT;
+                    Log.Save(logText);
+
+                    if (md5OUT != myTransactions.Key)
+                    {
+                        return Serialization.GeneralResponse(601).ToString();
+                    }
+                    else
+                    {
+                        Account account = _context.Accounts.FirstOrDefault(s => s.Id == myTransactions.AccountId);
+                        if (account == null)
+                        {
+                            return Serialization.GeneralResponse(501).ToString();
+                        }
+                        else
+                        {
+                            Customer customer = _context.Customers.FirstOrDefault(s => s.Id == account.CustomerId);
+                            List<Transaction> transactionsList = _context.Transactions.Where
+                                (s => s.AtmId == myTransactions.AtmId && s.AccountId == myTransactions.AccountId)
+                                .OrderBy(x => x.CreatedAt).ToList();
+                            if (transactionsList != null)
+                            {
+                                Mail.MyTransactions(customer, transactionsList);
+                                return Serialization.SerializeMyTransactionsResponse(account.Id, 201).ToString();
+                            }
+                            else
+                            {
+                                return Serialization.GeneralResponse(999).ToString();
                             }
                         }
                     }

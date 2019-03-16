@@ -1,17 +1,18 @@
-﻿using Blackbox.Server.Domain;
+﻿using Blackbox.Server.DataConn;
+using Blackbox.Server.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Blackbox.Server.src
 {
     public class Mail
     {
-        public static void Send(string to, string subject, string body)
+        private static DataContext _context = new DataContext();
+
+        public static void Send(string to, string subject, string body, bool isBodyHtml = false)
         {
             try
             {
@@ -21,6 +22,8 @@ namespace Blackbox.Server.src
                 mail.From = new MailAddress("atm.proyecto.seguridad@gmail.com");
                 mail.To.Add(to);
                 mail.Subject = subject;
+
+                mail.IsBodyHtml = isBodyHtml;
                 mail.Body = body;
 
                 SmtpServer.Port = 587;
@@ -95,6 +98,48 @@ namespace Blackbox.Server.src
             str += "\n Para el servicio de " + transaction.BillingName;
             str += "\n Gracias por su preferencia.";
             Send(customer.Email, "Pago Servicio Publico", str);
+        }
+
+        internal static void MyTransactions(Customer customer, List<Transaction> transactionsList)
+        {
+            string str = "<!DOCTYPE html>" +
+                "<html>" +
+                "<head>" +
+                "<style>table{border-collapse: collapse; width:100%;}" +
+                "td, th {border: 1px solid #dddddd; text-align: left; padding: 8px;}" +
+                "</style></head>" +
+                "<body>" +
+                "<p>Hola " + customer.LastName + "," + customer.FirstName + "</p>";
+            str += "<p> A continuacion se listan las transacciones realizadas en este cajero:</p>";
+
+            str += "\n <table>" +
+                "<tr>" +
+                "<th>Trx Type</th>" +
+                "<th>Account Type</th>" +
+                "<th>Balance Before</th>" +
+                "<th>balance After</th>" +
+                "<th>Amount</th>" +
+                "<th>Date and Time</th>" +
+                "<th>Service Name</th>" +
+                "<th>ATM Machine</th>" +
+                "</tr>";
+            foreach (var tx in transactionsList)
+            {
+                str += "<tr>" +
+                    "<td>" + _context.TxTypes.FirstOrDefault(s => s.Id == tx.TxTypeId).TypeName + "</td>" +
+                    "<td>" + tx.AccountTypeName + "</td>" +
+                    "<td>" + tx.BalanceBefore + "</td>" +
+                    "<td>" + tx.BalanceAfter + "</td>" +
+                    "<td>" + tx.Amount + "</td>" +
+                    "<td>" + tx.CreatedAt + "</td>" +
+                    "<td>" + tx.BillingName + "</td>" +
+                    "<td>" + tx.AtmId + "</td>" +
+                    "</tr>";
+            }
+                str += "</table></body></html>";
+
+            str += "<p>Gracias por su preferencia.</p>";
+            Send(customer.Email, "Listado de Tranacciones", str, true);
         }
     }
 }
