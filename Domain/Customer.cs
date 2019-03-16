@@ -17,5 +17,6 @@ namespace Blackbox.Server.Domain
         public string LastName { get; set; }
         public List<Account> Accounts { get; set; }
         public DateTime CreatedAt { get; set; }
+        public string Email { get; set; }
     }
 }

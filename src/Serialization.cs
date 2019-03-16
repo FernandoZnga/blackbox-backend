@@ -1,11 +1,8 @@
 using System.Xml.Serialization;
 using System.IO;
 using Blackbox.Server.Prop;
-using Blackbox.Client.src;
-using System;
-using Blackbox.Server.Domain;
 
-namespace Blackbox.Server
+namespace Blackbox.Server.src
 {
     class Serialization
 	{

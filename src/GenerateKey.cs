@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace Blackbox.Client.src
+namespace Blackbox.Server.src
 {
     public static class GenerateKey
     {
