@@ -2,6 +2,8 @@
 using Blackbox.Server.Domain;
 using Blackbox.Server.src;
 using System;
+using System.Windows.Forms;
+using static Blackbox.Server.SocketConn;
 
 namespace Blackbox.Server
 {
@@ -14,9 +16,9 @@ namespace Blackbox.Server
         [STAThread]
         static void Main()
         {
-            //Application.EnableVisualStyles();
-            //Application.SetCompatibleTextRenderingDefault(false);
-            //Application.Run(new Main());
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new Main());
 
 
             // Dummy data and Initial Data
@@ -27,7 +29,9 @@ namespace Blackbox.Server
             //InsertHondutel();
 
             // Run Server
-            SocketConn.AsynchronousSocketListener.StartListening();
+            // AsynchronousSocketListener async = new AsynchronousSocketListener();
+            // async.Start();
+            // SocketConn.AsynchronousSocketListener.StartListening();
         }
 
         private static void InsertEnne()

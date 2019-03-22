@@ -31,7 +31,7 @@ namespace Blackbox.Server.Prop
                     };
                     var md5OUT = GenerateKey.MD5(Serialization.SerializeCcPinNumber(ccNumber.CcNumber, ccNumber.PinNumber, ccNumber.AtmId));
                     logText.Md5OUT = md5OUT;
-                    Log.Save(logText);
+                    Log.SaveIn(logText);
 
                     if (md5OUT != ccNumber.Key)
                     {
@@ -76,7 +76,7 @@ namespace Blackbox.Server.Prop
                     };
                     var md5OUT = GenerateKey.MD5(Serialization.SerializeAccountBalance(account.AccountId, account.AtmId));
                     logText.Md5OUT = md5OUT;
-                    Log.Save(logText);
+                    Log.SaveIn(logText);
 
                     if (md5OUT != accountId.Key)
                     {
@@ -107,7 +107,7 @@ namespace Blackbox.Server.Prop
                     };
                     var md5OUT = GenerateKey.MD5(Serialization.SerializeWithdraw(accountId.AccountId, accountId.Amount, accountId.AtmId));
                     logText.Md5OUT = md5OUT;
-                    Log.Save(logText);
+                    Log.SaveIn(logText);
 
                     if (md5OUT != accountId.Key)
                     {
@@ -191,7 +191,7 @@ namespace Blackbox.Server.Prop
                     };
                     var md5OUT = GenerateKey.MD5(Serialization.SerializeDeposit(accountId.AccountId, accountId.Amount, accountId.AtmId));
                     logText.Md5OUT = md5OUT;
-                    Log.Save(logText);
+                    Log.SaveIn(logText);
 
                     if (md5OUT != accountId.Key)
                     {
@@ -269,7 +269,7 @@ namespace Blackbox.Server.Prop
                     };
                     var md5OUT = GenerateKey.MD5(Serialization.SerializeTransfer(accountId.AccountId, accountId.Amount, accountId.AccountIdDestiny, accountId.AtmId));
                     logText.Md5OUT = md5OUT;
-                    Log.Save(logText);
+                    Log.SaveIn(logText);
 
                     if (md5OUT != accountId.Key)
                     {
@@ -447,7 +447,7 @@ namespace Blackbox.Server.Prop
                     };
                     var md5OUT = GenerateKey.MD5(Serialization.SerializeChangePin(changePin.Account, changePin.CurrentPin, changePin.NewPin, changePin.AtmId));
                     logText.Md5OUT = md5OUT;
-                    Log.Save(logText);
+                    Log.SaveIn(logText);
 
                     if (md5OUT != change.Key)
                     {
@@ -488,7 +488,7 @@ namespace Blackbox.Server.Prop
                     };
                     var md5OUT = GenerateKey.MD5(Serialization.SerializePayEnee(payEnee.AccountId, payEnee.BillId, payEnee.AtmId));
                     logText.Md5OUT = md5OUT;
-                    Log.Save(logText);
+                    Log.SaveIn(logText);
 
                     if (md5OUT != enee.Key)
                     {
@@ -582,7 +582,7 @@ namespace Blackbox.Server.Prop
                     };
                     var md5OUT = GenerateKey.MD5(Serialization.SerializePayHondutel(payHondutel.AccountId, payHondutel.BillId, payHondutel.AtmId));
                     logText.Md5OUT = md5OUT;
-                    Log.Save(logText);
+                    Log.SaveIn(logText);
 
                     if (md5OUT != hondutel.Key)
                     {
@@ -677,7 +677,7 @@ namespace Blackbox.Server.Prop
                     };
                     var md5OUT = GenerateKey.MD5(Serialization.SerializePaySanaa(paySanaa.AccountId, paySanaa.BillId, paySanaa.AtmId));
                     logText.Md5OUT = md5OUT;
-                    Log.Save(logText);
+                    Log.SaveIn(logText);
 
                     if (md5OUT != sanaa.Key)
                     {
@@ -771,7 +771,7 @@ namespace Blackbox.Server.Prop
                     };
                     var md5OUT = GenerateKey.MD5(Serialization.SerializeMyTransactions(transactions.AccountId, transactions.AtmId));
                     logText.Md5OUT = md5OUT;
-                    Log.Save(logText);
+                    Log.SaveIn(logText);
 
                     if (md5OUT != myTransactions.Key)
                     {

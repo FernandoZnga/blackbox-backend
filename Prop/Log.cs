@@ -7,8 +7,20 @@ namespace Blackbox.Server.Prop
     {
         //private static DataContext _context = new DataContext();
 
-        public static void Save(__TextLog textLog)
+        public static void SaveIn(__TextLog textLog)
         {
+            Main.UpdateIncomingFields(textLog);
+
+            using (var context = new DataContext())
+            {
+                context.__TextLogs.Add(textLog);
+                context.SaveChanges();
+            }
+        }
+        public static void SaveOut(__TextLog textLog)
+        {
+            Main.UpdateOutgoingFields(textLog);
+
             using (var context = new DataContext())
             {
                 context.__TextLogs.Add(textLog);
