@@ -54,53 +54,60 @@ namespace Blackbox.Server.src
 
         public static string Decrypt(string cipherText, string passPhrase)
         {
+            try
+            {
+                byte[] initVectorBytes = Encoding.ASCII.GetBytes("pemgail9uzpgzl88");
+                byte[] cipherTextBytes = Convert.FromBase64String(cipherText);
 
-            byte[] initVectorBytes = Encoding.ASCII.GetBytes("pemgail9uzpgzl88");
-            byte[] cipherTextBytes = Convert.FromBase64String(cipherText);
+                PasswordDeriveBytes password = new PasswordDeriveBytes
+                (
+                    passPhrase,
+                    null
+                );
 
-            PasswordDeriveBytes password = new PasswordDeriveBytes
-            (
-                passPhrase,
-                null
-            );
+                byte[] keyBytes = password.GetBytes(256 / 8);
+                RijndaelManaged symmetricKey = new RijndaelManaged();
+                symmetricKey.Mode = CipherMode.CBC;
+                symmetricKey.Padding = PaddingMode.PKCS7;
+                ICryptoTransform decryptor = symmetricKey.CreateDecryptor
+                (
+                    keyBytes,
+                    initVectorBytes
+                );
 
-            byte[] keyBytes = password.GetBytes(256 / 8);
-            RijndaelManaged symmetricKey = new RijndaelManaged();
-            symmetricKey.Mode = CipherMode.CBC;
-            symmetricKey.Padding = PaddingMode.PKCS7;
-            ICryptoTransform decryptor = symmetricKey.CreateDecryptor
-            (
-                keyBytes,
-                initVectorBytes
-            );
+                MemoryStream memoryStream = new MemoryStream(cipherTextBytes);
+                CryptoStream cryptoStream = new CryptoStream
+                (
+                    memoryStream,
+                    decryptor,
+                    CryptoStreamMode.Read
+                );
 
-            MemoryStream memoryStream = new MemoryStream(cipherTextBytes);
-            CryptoStream cryptoStream = new CryptoStream
-            (
-                memoryStream,
-                decryptor,
-                CryptoStreamMode.Read
-            );
+                byte[] plainTextBytes = new byte[cipherTextBytes.Length];
 
-            byte[] plainTextBytes = new byte[cipherTextBytes.Length];
+                int decryptedByteCount = cryptoStream.Read
+                (
+                    plainTextBytes,
+                    0,
+                    plainTextBytes.Length
+                );
 
-            int decryptedByteCount = cryptoStream.Read
-            (
-                plainTextBytes,
-                0,
-                plainTextBytes.Length
-            );
+                memoryStream.Close();
+                cryptoStream.Close();
+                string plainText = Encoding.UTF8.GetString
+                (
+                    plainTextBytes,
+                    0,
+                    decryptedByteCount
+                );
 
-            memoryStream.Close();
-            cryptoStream.Close();
-            string plainText = Encoding.UTF8.GetString
-            (
-                plainTextBytes,
-                0,
-                decryptedByteCount
-            );
-
-            return plainText;
+                return plainText;
+            }
+            catch (Exception)
+            {
+                int error = 999;
+                return error.ToString();
+            }
         }
     }
 }

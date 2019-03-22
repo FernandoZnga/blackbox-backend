@@ -6,15 +6,19 @@ using System.Net;
 using System.Net.Sockets;  
 using System.Text;  
 using System.Threading;
+using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Blackbox.Server
 {
     public class SocketConn
     {
         // State object for reading client data asynchronously  
+        public static Socket wSocket;
+
         public class StateObject {
             // Client  socket.  
-		    public Socket workSocket = null;  
+		    public Socket workSocket = null;
 		    // Size of receive buffer.  
 		    public const int BufferSize = 1024;  
 		    // Receive buffer.  
@@ -24,51 +28,74 @@ namespace Blackbox.Server
 		}  
 		  
 		public class AsynchronousSocketListener {  
-		    // Thread signal.  
-		    public static ManualResetEvent allDone = new ManualResetEvent(false);  
-		  
-		    public AsynchronousSocketListener() {  
+            public void Start()
+            {
+                StartListening();
+                ShowMessageBox(true);
+            }
+
+            // Thread signal.  
+            public static ManualResetEvent allDone = new ManualResetEvent(false);
+
+            public AsynchronousSocketListener() {  
 		    }  
 		  
-		    public static void StartListening() {  
-		        // Establish the local endpoint for the socket.  
-		        // The DNS name of the computer  
-		        // running the listener is "host.contoso.com".  
-		        IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());  
-		        IPAddress ipAddress = ipHostInfo.AddressList[0];  
-		        IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);  
-		  
-		        // Create a TCP/IP socket.  
-		        Socket listener = new Socket(ipAddress.AddressFamily,  
-		            SocketType.Stream, ProtocolType.Tcp );  
-		  
-		        // Bind the socket to the local endpoint and listen for incoming connections.  
-		        try {  
-		            listener.Bind(localEndPoint);  
-		            listener.Listen(100);  
-		  
-		            while (true) {  
-		                // Set the event to nonsignaled state.  
-		                allDone.Reset();  
-		  
-		                // Start an asynchronous socket to listen for connections.  
-		                Console.WriteLine("Waiting for a connection...");  
-		                listener.BeginAccept(   
-		                    new AsyncCallback(AcceptCallback),  
-		                    listener );  
-		  
-		                // Wait until a connection is made before continuing.  
-		                allDone.WaitOne();  
-		            }  
-		  
-		        } catch (Exception e) {  
-		            Console.WriteLine(e.ToString());  
-		        }  
-		  
-		        Console.WriteLine("\nPress ENTER to continue...");  
-		        Console.Read();  
-		  
+		    public async void StartListening()
+            {
+                await Task.Run(() => Loop());
 		    }  
+            private async void Loop()
+            {
+                // Establish the local endpoint for the socket.  
+                // The DNS name of the computer  
+                // running the listener is "host.contoso.com".  
+                IPHostEntry ipHostInfo = Dns.GetHostEntry(Dns.GetHostName());
+                IPAddress ipAddress = ipHostInfo.AddressList[0];
+                IPEndPoint localEndPoint = new IPEndPoint(ipAddress, 11000);
+
+                // Create a TCP/IP socket.  
+                Socket listener = new Socket(ipAddress.AddressFamily,
+                    SocketType.Stream, ProtocolType.Tcp);
+
+                // Bind the socket to the local endpoint and listen for incoming connections.  
+                try
+                {
+                    listener.Bind(localEndPoint);
+                    listener.Listen(100);
+
+                    while (true)
+                    {
+                        // Set the event to nonsignaled state.  
+                        allDone.Reset();
+
+                        // Start an asynchronous socket to listen for connections.  
+                        Console.WriteLine("Waiting for a connection...");
+                        listener.BeginAccept(
+                            new AsyncCallback(AcceptCallback),
+                            listener);
+                        // Wait until a connection is made before continuing.  
+                        allDone.WaitOne();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.ToString());
+                }
+
+                Console.WriteLine("\nPress ENTER to continue...");
+                Console.Read();
+            }
+            private void ShowMessageBox(bool value)
+            {
+                if (value)
+                {
+                    MessageBox.Show("Server Started");
+                }
+                else
+                {
+                    MessageBox.Show("Server Stoped");
+                }
+            }
 		  
 		    public static void AcceptCallback(IAsyncResult ar) {  
 		        // Signal the main thread to continue.  
@@ -95,9 +122,11 @@ namespace Blackbox.Server
 		        StateObject state = (StateObject) ar.AsyncState;  
 		        Socket handler = state.workSocket;
                 Console.WriteLine(handler.AddressFamily.ToString());
-		  
-		        // Read data from the client socket.   
-		        int bytesRead = handler.EndReceive(ar);  
+                wSocket = handler;
+                Console.WriteLine(wSocket.Connected);
+
+                // Read data from the client socket.   
+                int bytesRead = handler.EndReceive(ar);  
 		  
 		        if (bytesRead > 0) {  
 		            // There  might be more data, so store the data received so far.
@@ -118,37 +147,74 @@ namespace Blackbox.Server
                         var contentText = Encryption.Decrypt(content, "Security1234");
                         Console.WriteLine("Read Decrypted {0} bytes from socket. \n Data : {1}",
                             contentText.Length, contentText);
-
-                        var md5IN = contentText.Substring(contentText.IndexOf("<Key>", 0) + 5, contentText.IndexOf("</Key>", 0) - contentText.IndexOf("<Key>", 0) - 5);
-                        var atmId = contentText.Substring(contentText.IndexOf("<AtmId>", 0) + 7, contentText.IndexOf("</AtmId>", 0) - contentText.IndexOf("<AtmId>", 0) - 7);
-                        __TextLog logTextIN = new __TextLog
+                        
+                        // si no se des-encripto correctamente
+                        if (contentText == "999")
                         {
-                            DesText = content,
-                            XmlText = contentText,
-                            Md5IN = md5IN,
-                            AtmId = atmId
-                        };
-                        var responseContent = Handle.ReadText(contentText, logTextIN);
-                        //
-                        // Echo the data back to the client. 
-                        var md5OUT = responseContent.Substring(responseContent.IndexOf("<Key>", 0) + 5, responseContent.IndexOf("</Key>", 0) - responseContent.IndexOf("<Key>", 0) - 5);
-                        var transaction = responseContent.Substring(responseContent.IndexOf("<", 1) + 1, responseContent.IndexOf("xmlns:xsi", 0) - responseContent.IndexOf("<", 1) - 1);
-                        var responseEncrypted = Encryption.Encrypt(responseContent, "Security1234");
-                        __TextLog logTextOUT = new __TextLog
+                            __TextLog logTextIN = new __TextLog
+                            {
+                                DesText = content,
+                                XmlText = contentText,
+                                Md5IN = "<Security Bridge>",
+                                Md5OUT = "<Security Bridge>",
+                                AtmId = "<Security Bridge>"
+                            };
+                            var responseContent = Handle.ReadText(contentText, logTextIN);
+                            //
+                            // Echo the data back to the client. 
+                            var md5OUT = responseContent.Substring(responseContent.IndexOf("<Key>", 0) + 5, responseContent.IndexOf("</Key>", 0) - responseContent.IndexOf("<Key>", 0) - 5);
+                            var transaction = responseContent.Substring(responseContent.IndexOf("<", 1) + 1, responseContent.IndexOf("xmlns:xsi", 0) - responseContent.IndexOf("<", 1) - 1);
+                            var responseEncrypted = Encryption.Encrypt(responseContent, "Security1234");
+                            __TextLog logTextOUT = new __TextLog
+                            {
+                                DesText = responseEncrypted,
+                                XmlText = responseContent,
+                                Direction = "OUT",
+                                Md5OUT = md5OUT,
+                                Transaction = transaction,
+                                AtmId = "<SecurityIDType Bridge>"
+                            };
+                            Log.SaveOut(logTextOUT);
+                            Console.WriteLine("Sent Xml text {0} bytes from socket. \n Data : {1}",
+                                content.Length, responseContent);
+                            Console.WriteLine("Sent Encrypted {0} bytes from socket. \n Data : {1}",
+                                content.Length, responseEncrypted);
+                            Send(handler, responseEncrypted);
+                        }
+                        // si se des encripto correctamente
+                        else
                         {
-                            DesText = responseEncrypted,
-                            XmlText = responseContent,
-                            Direction = "OUT",
-                            Md5OUT = md5OUT,
-                            Transaction = transaction,
-                            AtmId = atmId
-                        };
-                        Log.Save(logTextOUT);
-                        Console.WriteLine("Sent Xml text {0} bytes from socket. \n Data : {1}",
-                            content.Length, responseContent);
-                        Console.WriteLine("Sent Encrypted {0} bytes from socket. \n Data : {1}",
-                            content.Length, responseEncrypted);
-                        Send(handler, responseEncrypted);  
+                            var md5IN = contentText.Substring(contentText.IndexOf("<Key>", 0) + 5, contentText.IndexOf("</Key>", 0) - contentText.IndexOf("<Key>", 0) - 5);
+                            var atmId = contentText.Substring(contentText.IndexOf("<AtmId>", 0) + 7, contentText.IndexOf("</AtmId>", 0) - contentText.IndexOf("<AtmId>", 0) - 7);
+                            __TextLog logTextIN = new __TextLog
+                            {
+                                DesText = content,
+                                XmlText = contentText,
+                                Md5IN = md5IN,
+                                AtmId = atmId
+                            };
+                            var responseContent = Handle.ReadText(contentText, logTextIN);
+                            //
+                            // Echo the data back to the client. 
+                            var md5OUT = responseContent.Substring(responseContent.IndexOf("<Key>", 0) + 5, responseContent.IndexOf("</Key>", 0) - responseContent.IndexOf("<Key>", 0) - 5);
+                            var transaction = responseContent.Substring(responseContent.IndexOf("<", 1) + 1, responseContent.IndexOf("xmlns:xsi", 0) - responseContent.IndexOf("<", 1) - 1);
+                            var responseEncrypted = Encryption.Encrypt(responseContent, "Security1234");
+                            __TextLog logTextOUT = new __TextLog
+                            {
+                                DesText = responseEncrypted,
+                                XmlText = responseContent,
+                                Direction = "OUT",
+                                Md5OUT = md5OUT,
+                                Transaction = transaction,
+                                AtmId = atmId
+                            };
+                            Log.SaveOut(logTextOUT);
+                            Console.WriteLine("Sent Xml text {0} bytes from socket. \n Data : {1}",
+                                content.Length, responseContent);
+                            Console.WriteLine("Sent Encrypted {0} bytes from socket. \n Data : {1}",
+                                content.Length, responseEncrypted);
+                            Send(handler, responseEncrypted);
+                        }
 		            } else {  
 		                // Not all data received. Get more.  
 		                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,  
@@ -176,19 +242,19 @@ namespace Blackbox.Server
                     // Complete sending the data to the remote device.  
                     int bytesSent = handler.EndSend(ar);  
 		            Console.WriteLine("Sent {0} bytes to client.", bytesSent);  
-		  
+		    
 		            handler.Shutdown(SocketShutdown.Both);  
 		            handler.Close();  
 		  
 		        } catch (Exception e) {  
 		            Console.WriteLine(e.ToString());  
 		        }  
-		    }  
-		  
-		    //public static int Main(String[] args) {  
-		    //    StartListening();  
-		    //    return 0;  
-		    //}  
-		}  
+		    }
+
+            //public static int Main(String[] args) {  
+            //    StartListening();  
+            //    return 0;  
+            //}  
+        }  
     }
 }
