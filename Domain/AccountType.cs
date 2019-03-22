@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Blackbox.Server.Domain
 {
-    public class CcType
+    public class AccountType
     {
-        public CcType()
+        public AccountType()
         {
             Accounts = new List<Account>();
             CreatedAt = DateTime.Now;

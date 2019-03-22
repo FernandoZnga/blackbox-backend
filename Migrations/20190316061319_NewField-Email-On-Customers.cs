@@ -2,21 +2,21 @@
 
 namespace Blackbox.Server.Migrations
 {
-    public partial class NewFieldAccountTypeNameTransactionsTable : Migration
+    public partial class NewFieldEmailOnCustomers : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<string>(
-                name: "AccountTypeName",
-                table: "Transactions",
+                name: "Email",
+                table: "Customers",
                 nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "AccountTypeName",
-                table: "Transactions");
+                name: "Email",
+                table: "Customers");
         }
     }
 }

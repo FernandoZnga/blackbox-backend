@@ -1,6 +1,6 @@
 using System;
 
-namespace Blackbox.Server
+namespace Blackbox.Server.Prop
 {
     [Serializable()]
 	public class CcPinNumber

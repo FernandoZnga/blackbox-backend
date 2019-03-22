@@ -218,52 +218,50 @@
   <ItemGroup>
     <Compile Include="DataConn\DataContext.cs" />
     <Compile Include="Domain\Account.cs" />
-    <Compile Include="Domain\CcType.cs" />
+    <Compile Include="Domain\AccountType.cs" />
     <Compile Include="Domain\CreditCard.cs" />
     <Compile Include="Domain\Customer.cs" />
+    <Compile Include="Domain\Enee.cs" />
+    <Compile Include="Domain\Hondutel.cs" />
+    <Compile Include="Domain\Sanaa.cs" />
     <Compile Include="Domain\Transaction.cs" />
     <Compile Include="Domain\TxType.cs" />
     <Compile Include="Domain\__TextLog.cs" />
-    <Compile Include="Migrations\20190301030316_init.cs" />
-    <Compile Include="Migrations\20190301030316_init.designer.cs">
-      <DependentUpon>20190301030316_init.cs</DependentUpon>
+    <Compile Include="Migrations\20190312084457_init.cs" />
+    <Compile Include="Migrations\20190312084457_init.designer.cs">
+      <DependentUpon>20190312084457_init.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\20190302063214_NewColumn-Direction__TextLogs-Table.cs" />
-    <Compile Include="Migrations\20190302063214_NewColumn-Direction__TextLogs-Table.designer.cs">
-      <DependentUpon>20190302063214_NewColumn-Direction__TextLogs-Table.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\20190302065459_NewColumn-MD5INOUT-Transaction__TextLogs-Table.cs" />
-    <Compile Include="Migrations\20190302065459_NewColumn-MD5INOUT-Transaction__TextLogs-Table.designer.cs">
-      <DependentUpon>20190302065459_NewColumn-MD5INOUT-Transaction__TextLogs-Table.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\20190303174018_Add-Withdraw-Table-Feature.cs" />
-    <Compile Include="Migrations\20190303174018_Add-Withdraw-Table-Feature.designer.cs">
-      <DependentUpon>20190303174018_Add-Withdraw-Table-Feature.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\20190306182106_NewField-AccountTypeName-Transactions-Table.cs" />
-    <Compile Include="Migrations\20190306182106_NewField-AccountTypeName-Transactions-Table.designer.cs">
-      <DependentUpon>20190306182106_NewField-AccountTypeName-Transactions-Table.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\20190308164034_NewField-AtmId.cs" />
-    <Compile Include="Migrations\20190308164034_NewField-AtmId.designer.cs">
-      <DependentUpon>20190308164034_NewField-AtmId.cs</DependentUpon>
+    <Compile Include="Migrations\20190316061319_NewField-Email-On-Customers.cs" />
+    <Compile Include="Migrations\20190316061319_NewField-Email-On-Customers.designer.cs">
+      <DependentUpon>20190316061319_NewField-Email-On-Customers.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\DataContextModelSnapshot.cs" />
     <Compile Include="Prop\AccountBalance.cs" />
     <Compile Include="Prop\AccountBalanceResponse.cs" />
     <Compile Include="Prop\CcPinNumber.cs" />
     <Compile Include="Prop\CcPinNumberResponse.cs" />
+    <Compile Include="Prop\ChangePin.cs" />
+    <Compile Include="Prop\ChangePinResponse.cs" />
     <Compile Include="Prop\Deposit.cs" />
     <Compile Include="Prop\DepositResponse.cs" />
     <Compile Include="Prop\GeneralResponse.cs" />
     <Compile Include="Prop\Handle.cs" />
     <Compile Include="Prop\Log.cs" />
+    <Compile Include="Prop\MyTransactions.cs" />
+    <Compile Include="Prop\MyTransactionsResponse.cs" />
+    <Compile Include="Prop\PayEnee.cs" />
+    <Compile Include="Prop\PayEneeResponse.cs" />
+    <Compile Include="Prop\PayHondutel.cs" />
+    <Compile Include="Prop\PayHondutelResponse.cs" />
+    <Compile Include="Prop\PaySanaa.cs" />
+    <Compile Include="Prop\PaySanaaResponse.cs" />
     <Compile Include="Prop\Transfer.cs" />
     <Compile Include="Prop\TransferResponse.cs" />
     <Compile Include="Prop\Withdraw.cs" />
     <Compile Include="Prop\WithdrawResponse.cs" />
     <Compile Include="src\Encryption.cs" />
     <Compile Include="src\GenerateKey.cs" />
+    <Compile Include="src\Mail.cs" />
     <Compile Include="src\Serialization.cs" />
     <Compile Include="src\SocketConn.cs" />
     <Compile Include="Main.cs">

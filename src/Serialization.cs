@@ -1,10 +1,9 @@
 using System.Xml.Serialization;
 using System.IO;
 using Blackbox.Server.Prop;
-using Blackbox.Client.src;
 using System;
 
-namespace Blackbox.Server
+namespace Blackbox.Server.src
 {
     class Serialization
 	{
@@ -255,6 +254,237 @@ namespace Blackbox.Server
                 accountInfo.Key = GenerateKey.MD5(stringWriter.ToString());
                 StringWriter stringWriterNew = new StringWriter();
                 xml.Serialize(stringWriterNew, accountInfo);
+                return stringWriterNew.ToString();
+            }
+        }
+
+        internal static ChangePin DeserializeChangePin(string xmlText)
+        {
+            XmlSerializer xml = new XmlSerializer(typeof(ChangePin));
+            using (StringReader stringReader = new StringReader(xmlText))
+            {
+                return (ChangePin)xml.Deserialize(stringReader);
+            }
+        }
+
+        internal static string SerializeChangePin(int account, string currentPin, string newPin, string atmId)
+        {
+            ChangePin changePin = new ChangePin
+            {
+                Account = account,
+                CurrentPin = currentPin,
+                NewPin = newPin,
+                AtmId = atmId
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(ChangePin));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, changePin);
+                return stringWriter.ToString();
+            }
+        }
+
+        internal static object SerializeChangePinResponse(int accountId, int response)
+        {
+            ChangePinResponse accountInfo = new ChangePinResponse
+            {
+                AccountId = accountId,
+                Response = response
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(ChangePinResponse));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, accountInfo);
+                accountInfo.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, accountInfo);
+                return stringWriterNew.ToString();
+            }
+        }
+
+        internal static PayEnee DeserializePayEnee(string xmlText)
+        {
+            XmlSerializer xml = new XmlSerializer(typeof(PayEnee));
+            using (StringReader stringReader = new StringReader(xmlText))
+            {
+                return (PayEnee)xml.Deserialize(stringReader);
+            }
+        }
+
+        internal static string SerializePayEnee(int accountId, int billId, string atmId)
+        {
+            PayEnee payment = new PayEnee
+            {
+                AccountId = accountId,
+                BillId = billId,
+                AtmId = atmId
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(PayEnee));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, payment);
+                return stringWriter.ToString();
+            }
+        }
+
+        internal static string SerializePayEneeResponse(int accountId, double newBalance, string accountTypeName, int response)
+        {
+            PayEneeResponse accountInfo = new PayEneeResponse
+            {
+                AccountId = accountId,
+                NewBalance = newBalance,
+                AccountTypeName = accountTypeName,
+                Response = response
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(PayEneeResponse));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, accountInfo);
+                accountInfo.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, accountInfo);
+                return stringWriterNew.ToString();
+            }
+        }
+
+        internal static PayHondutel DeserializePayHondutel(string xmlText)
+        {
+            XmlSerializer xml = new XmlSerializer(typeof(PayHondutel));
+            using (StringReader stringReader = new StringReader(xmlText))
+            {
+                return (PayHondutel)xml.Deserialize(stringReader);
+            }
+        }
+
+        internal static string SerializePayHondutel(int accountId, int billId, string atmId)
+        {
+            PayHondutel payment = new PayHondutel
+            {
+                AccountId = accountId,
+                BillId = billId,
+                AtmId = atmId
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(PayHondutel));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, payment);
+                return stringWriter.ToString();
+            }
+        }
+
+        internal static string SerializePayHondutelResponse(int accountId, double newBalance, string accountTypeName, int response)
+        {
+            PayHondutelResponse accountInfo = new PayHondutelResponse
+            {
+                AccountId = accountId,
+                NewBalance = newBalance,
+                AccountTypeName = accountTypeName,
+                Response = response
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(PayHondutelResponse));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, accountInfo);
+                accountInfo.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, accountInfo);
+                return stringWriterNew.ToString();
+            }
+        }
+
+        internal static PaySanaa DeserializePaySanaa(string xmlText)
+        {
+            XmlSerializer xml = new XmlSerializer(typeof(PaySanaa));
+            using (StringReader stringReader = new StringReader(xmlText))
+            {
+                return (PaySanaa)xml.Deserialize(stringReader);
+            }
+        }
+
+        internal static string SerializePaySanaa(int accountId, int billId, string atmId)
+        {
+            PaySanaa payment = new PaySanaa
+            {
+                AccountId = accountId,
+                BillId = billId,
+                AtmId = atmId
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(PaySanaa));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, payment);
+                return stringWriter.ToString();
+            }
+        }
+
+        internal static string SerializePaySanaaResponse(int accountId, double newBalance, string accountTypeName, int response)
+        {
+            PaySanaaResponse accountInfo = new PaySanaaResponse
+            {
+                AccountId = accountId,
+                NewBalance = newBalance,
+                AccountTypeName = accountTypeName,
+                Response = response
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(PaySanaaResponse));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, accountInfo);
+                accountInfo.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, accountInfo);
+                return stringWriterNew.ToString();
+            }
+        }
+
+        internal static MyTransactions DeserializeMyTransactions(string xmlText)
+        {
+            XmlSerializer xml = new XmlSerializer(typeof(MyTransactions));
+            using (StringReader stringReader = new StringReader(xmlText))
+            {
+                return (MyTransactions)xml.Deserialize(stringReader);
+            }
+        }
+
+        internal static string SerializeMyTransactions(int accountId, string atmId)
+        {
+            MyTransactions transactions = new MyTransactions
+            {
+                AccountId = accountId,
+                AtmId = atmId
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(MyTransactions));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, transactions);
+                return stringWriter.ToString();
+            }
+        }
+
+        internal static object SerializeMyTransactionsResponse(int accountId, int response)
+        {
+            MyTransactionsResponse transactions = new MyTransactionsResponse
+            {
+                AccountId = accountId,
+                Response = response
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(MyTransactionsResponse));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, transactions);
+                transactions.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, transactions);
                 return stringWriterNew.ToString();
             }
         }
