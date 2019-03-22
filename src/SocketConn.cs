@@ -147,37 +147,74 @@ namespace Blackbox.Server
                         var contentText = Encryption.Decrypt(content, "Security1234");
                         Console.WriteLine("Read Decrypted {0} bytes from socket. \n Data : {1}",
                             contentText.Length, contentText);
-
-                        var md5IN = contentText.Substring(contentText.IndexOf("<Key>", 0) + 5, contentText.IndexOf("</Key>", 0) - contentText.IndexOf("<Key>", 0) - 5);
-                        var atmId = contentText.Substring(contentText.IndexOf("<AtmId>", 0) + 7, contentText.IndexOf("</AtmId>", 0) - contentText.IndexOf("<AtmId>", 0) - 7);
-                        __TextLog logTextIN = new __TextLog
+                        
+                        // si no se des-encripto correctamente
+                        if (contentText == "999")
                         {
-                            DesText = content,
-                            XmlText = contentText,
-                            Md5IN = md5IN,
-                            AtmId = atmId
-                        };
-                        var responseContent = Handle.ReadText(contentText, logTextIN);
-                        //
-                        // Echo the data back to the client. 
-                        var md5OUT = responseContent.Substring(responseContent.IndexOf("<Key>", 0) + 5, responseContent.IndexOf("</Key>", 0) - responseContent.IndexOf("<Key>", 0) - 5);
-                        var transaction = responseContent.Substring(responseContent.IndexOf("<", 1) + 1, responseContent.IndexOf("xmlns:xsi", 0) - responseContent.IndexOf("<", 1) - 1);
-                        var responseEncrypted = Encryption.Encrypt(responseContent, "Security1234");
-                        __TextLog logTextOUT = new __TextLog
+                            __TextLog logTextIN = new __TextLog
+                            {
+                                DesText = content,
+                                XmlText = contentText,
+                                Md5IN = "<Security Bridge>",
+                                Md5OUT = "<Security Bridge>",
+                                AtmId = "<Security Bridge>"
+                            };
+                            var responseContent = Handle.ReadText(contentText, logTextIN);
+                            //
+                            // Echo the data back to the client. 
+                            var md5OUT = responseContent.Substring(responseContent.IndexOf("<Key>", 0) + 5, responseContent.IndexOf("</Key>", 0) - responseContent.IndexOf("<Key>", 0) - 5);
+                            var transaction = responseContent.Substring(responseContent.IndexOf("<", 1) + 1, responseContent.IndexOf("xmlns:xsi", 0) - responseContent.IndexOf("<", 1) - 1);
+                            var responseEncrypted = Encryption.Encrypt(responseContent, "Security1234");
+                            __TextLog logTextOUT = new __TextLog
+                            {
+                                DesText = responseEncrypted,
+                                XmlText = responseContent,
+                                Direction = "OUT",
+                                Md5OUT = md5OUT,
+                                Transaction = transaction,
+                                AtmId = "<SecurityIDType Bridge>"
+                            };
+                            Log.SaveOut(logTextOUT);
+                            Console.WriteLine("Sent Xml text {0} bytes from socket. \n Data : {1}",
+                                content.Length, responseContent);
+                            Console.WriteLine("Sent Encrypted {0} bytes from socket. \n Data : {1}",
+                                content.Length, responseEncrypted);
+                            Send(handler, responseEncrypted);
+                        }
+                        // si se des encripto correctamente
+                        else
                         {
-                            DesText = responseEncrypted,
-                            XmlText = responseContent,
-                            Direction = "OUT",
-                            Md5OUT = md5OUT,
-                            Transaction = transaction,
-                            AtmId = atmId
-                        };
-                        Log.SaveOut(logTextOUT);
-                        Console.WriteLine("Sent Xml text {0} bytes from socket. \n Data : {1}",
-                            content.Length, responseContent);
-                        Console.WriteLine("Sent Encrypted {0} bytes from socket. \n Data : {1}",
-                            content.Length, responseEncrypted);
-                        Send(handler, responseEncrypted);  
+                            var md5IN = contentText.Substring(contentText.IndexOf("<Key>", 0) + 5, contentText.IndexOf("</Key>", 0) - contentText.IndexOf("<Key>", 0) - 5);
+                            var atmId = contentText.Substring(contentText.IndexOf("<AtmId>", 0) + 7, contentText.IndexOf("</AtmId>", 0) - contentText.IndexOf("<AtmId>", 0) - 7);
+                            __TextLog logTextIN = new __TextLog
+                            {
+                                DesText = content,
+                                XmlText = contentText,
+                                Md5IN = md5IN,
+                                AtmId = atmId
+                            };
+                            var responseContent = Handle.ReadText(contentText, logTextIN);
+                            //
+                            // Echo the data back to the client. 
+                            var md5OUT = responseContent.Substring(responseContent.IndexOf("<Key>", 0) + 5, responseContent.IndexOf("</Key>", 0) - responseContent.IndexOf("<Key>", 0) - 5);
+                            var transaction = responseContent.Substring(responseContent.IndexOf("<", 1) + 1, responseContent.IndexOf("xmlns:xsi", 0) - responseContent.IndexOf("<", 1) - 1);
+                            var responseEncrypted = Encryption.Encrypt(responseContent, "Security1234");
+                            __TextLog logTextOUT = new __TextLog
+                            {
+                                DesText = responseEncrypted,
+                                XmlText = responseContent,
+                                Direction = "OUT",
+                                Md5OUT = md5OUT,
+                                Transaction = transaction,
+                                AtmId = atmId
+                            };
+                            Log.SaveOut(logTextOUT);
+                            Console.WriteLine("Sent Xml text {0} bytes from socket. \n Data : {1}",
+                                content.Length, responseContent);
+                            Console.WriteLine("Sent Encrypted {0} bytes from socket. \n Data : {1}",
+                                content.Length, responseEncrypted);
+                            Send(handler, responseEncrypted);
+                        }
 		            } else {  
 		                // Not all data received. Get more.  
 		                handler.BeginReceive(state.buffer, 0, StateObject.BufferSize, 0,  

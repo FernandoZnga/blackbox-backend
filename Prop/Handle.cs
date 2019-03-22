@@ -14,6 +14,13 @@ namespace Blackbox.Server.Prop
         
         public static string ReadText(string xmlText, __TextLog logText)
         {
+            if (xmlText == "999")
+            {
+                logText.Transaction = "<Security Bridge>";
+                logText.Md5OUT = "Security Bridge";
+                Log.SaveIn(logText);
+                return Serialization.GeneralResponse(601).ToString();
+            }
             //xmlText = xmlText.Substring(0, xmlText.IndexOf("<EOF>", 0));
             XDocument xmlNode = XDocument.Parse(xmlText);
             foreach (var head in xmlNode.Elements())
