@@ -27,11 +27,33 @@ namespace Blackbox.Server
             //InsertEnne();
             //InsertSanaa();
             //InsertHondutel();
+            //InsertExchangeRate();
 
             // Run Server
             // AsynchronousSocketListener async = new AsynchronousSocketListener();
             // async.Start();
             // SocketConn.AsynchronousSocketListener.StartListening();
+        }
+
+        private static void InsertExchangeRate()
+        {
+            var Dollar = new Exchange()
+            {
+                Currency = "Dollar",
+                Compra = 24.4356,
+                Venta = 24.6066
+            };
+            var Euro = new Exchange()
+            {
+                Currency = "Euro",
+                Compra = 26.5126,
+                Venta = 29.1588
+            };
+            using (var context = new DataContext())
+            {
+                context.Exchange.AddRange(Dollar, Euro);
+                context.SaveChanges();
+            }
         }
 
         private static void InsertEnne()

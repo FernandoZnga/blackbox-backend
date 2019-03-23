@@ -222,6 +222,7 @@
     <Compile Include="Domain\CreditCard.cs" />
     <Compile Include="Domain\Customer.cs" />
     <Compile Include="Domain\Enee.cs" />
+    <Compile Include="Domain\Exchange.cs" />
     <Compile Include="Domain\Hondutel.cs" />
     <Compile Include="Domain\Sanaa.cs" />
     <Compile Include="Domain\Transaction.cs" />
@@ -235,6 +236,10 @@
     <Compile Include="Migrations\20190316061319_NewField-Email-On-Customers.designer.cs">
       <DependentUpon>20190316061319_NewField-Email-On-Customers.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20190323022502_NewExchangeRate.cs" />
+    <Compile Include="Migrations\20190323022502_NewExchangeRate.designer.cs">
+      <DependentUpon>20190323022502_NewExchangeRate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\DataContextModelSnapshot.cs" />
     <Compile Include="Prop\AccountBalance.cs" />
     <Compile Include="Prop\AccountBalanceResponse.cs" />
@@ -244,6 +249,8 @@
     <Compile Include="Prop\ChangePinResponse.cs" />
     <Compile Include="Prop\Deposit.cs" />
     <Compile Include="Prop\DepositResponse.cs" />
+    <Compile Include="Prop\ExchangeView.cs" />
+    <Compile Include="Prop\ExchangeViewResponse.cs" />
     <Compile Include="Prop\GeneralResponse.cs" />
     <Compile Include="Prop\Handle.cs" />
     <Compile Include="Prop\Log.cs" />

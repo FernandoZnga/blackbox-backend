@@ -809,6 +809,36 @@ namespace Blackbox.Server.Prop
                         }
                     }
                 }
+                else if (api == "ExchangeView")
+                {
+                    logText.Transaction = api;
+                    ExchangeView exchangeView = Serialization.DeserializeExchangeView(xmlText);
+                    ExchangeView exchange = new ExchangeView
+                    {
+                        Currency = exchangeView.Currency,
+                        AtmId = exchangeView.AtmId
+                    };
+                    var md5OUT = GenerateKey.MD5(Serialization.SerializeExchangeView(exchange.Currency, exchange.AtmId));
+                    logText.Md5OUT = md5OUT;
+                    Log.SaveIn(logText);
+
+                    if (md5OUT != exchangeView.Key)
+                    {
+                        return Serialization.GeneralResponse(601).ToString();
+                    }
+                    else
+                    {
+                        var ex = _context.Exchange.FirstOrDefault(s => s.Currency == exchangeView.Currency);
+                        if (ex == null)
+                        {
+                            return Serialization.GeneralResponse(501).ToString();
+                        }
+                        else
+                        {
+                            return Serialization.SerializeExchangeViewResponse(ex.Currency, ex.Compra, ex.Venta, 220).ToString();
+                        }
+                    }
+                }
                 else
                 {
                     return Serialization.GeneralResponse(501).ToString();

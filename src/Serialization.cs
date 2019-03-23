@@ -488,5 +488,51 @@ namespace Blackbox.Server.src
                 return stringWriterNew.ToString();
             }
         }
+
+        internal static ExchangeView DeserializeExchangeView(string xmlText)
+        {
+            XmlSerializer xml = new XmlSerializer(typeof(ExchangeView));
+            using (StringReader stringReader = new StringReader(xmlText))
+            {
+                return (ExchangeView)xml.Deserialize(stringReader);
+            }
+        }
+
+        internal static string SerializeExchangeView(string currency, string atmId)
+        {
+            ExchangeView transactions = new ExchangeView
+            {
+                Currency = currency,
+                AtmId = atmId
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(ExchangeView));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, transactions);
+                return stringWriter.ToString();
+            }
+        }
+
+        internal static string SerializeExchangeViewResponse(string currency, double compra, double venta, int response)
+        {
+            ExchangeViewResponse transactions = new ExchangeViewResponse
+            {
+                Currency = currency,
+                Compra = compra,
+                Venta = venta,
+                Response = response
+            };
+
+            XmlSerializer xml = new XmlSerializer(typeof(ExchangeViewResponse));
+            using (StringWriter stringWriter = new StringWriter())
+            {
+                xml.Serialize(stringWriter, transactions);
+                transactions.Key = GenerateKey.MD5(stringWriter.ToString());
+                StringWriter stringWriterNew = new StringWriter();
+                xml.Serialize(stringWriterNew, transactions);
+                return stringWriterNew.ToString();
+            }
+        }
     }
 }

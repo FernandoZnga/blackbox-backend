@@ -15,6 +15,7 @@ namespace Blackbox.Server.DataConn
         public DbSet<Enee> Enee { get; set; }
         public DbSet<Sanaa> Sanaa { get; set; }
         public DbSet<Hondutel> Hondutel { get; set; }
+        public DbSet<Exchange> Exchange { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
